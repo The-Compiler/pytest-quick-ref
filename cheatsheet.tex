@@ -1,0 +1,50 @@
+\documentclass[notumble,nocombine]{leaflet}
+\usepackage[T1]{fontenc}
+\usepackage{cmbright}
+\usepackage{graphicx}
+\usepackage[nolinks]{qrcode}
+\usepackage{xcolor}
+\usepackage{fontawesome5}
+\definecolor{codeblue}{rgb}{0.2,0.2,0.7}  % actually codeblue, better on printed paper
+\newcommand{\bold}[1]{\textbf{\textcolor{codeblue}{#1}}}
+
+\begin{document}
+\begin{center}
+    \includegraphics[width=.5\linewidth]{img/pytest.pdf}
+    \vspace{1.5em}
+
+    {\Huge Cheat Sheet} \\
+    \vspace{3em}
+    {\huge by}
+    \vspace{.75em}
+
+    \includegraphics[width=.8\linewidth]{img/bruhinsw.pdf} \\
+
+    \vspace{5em}
+
+    \begin{minipage}{.2\linewidth}
+        \vspace{1.5em}
+        \textcolor{codeblue}{\qrcode[height=\linewidth]{https://bruhin.software}}
+    \end{minipage}
+    \hspace{.5em}
+    \begin{minipage}{.75\linewidth}
+        {\LARGE \bold{Level up your testing!}}
+        \vspace{1em}
+
+        \large
+        Python / \bold{pytest trainings}, \\ consulting and development by one of \bold{pytest's core maintainers}. \\
+    \end{minipage}
+
+    \raggedright
+    \bold{Get a three-day deep-dive into testing with pytest:} \\[.25em]
+    Writing your first test, using fixtures, mocking, and even
+    writing your own plugins.
+
+    The training is designed to be interactive with \bold{hands-on exercises} and \bold{real-world examples}.
+
+    Tailored trainings are offered \bold{on-site} at your company (CH/DE/AT/\ldots{}) or \bold{remotely}.
+
+    \vfill
+    {\small \faCreativeCommons{} \faCreativeCommonsBy{} \faCreativeCommonsNd{} \, CC BY-ND 4.0 \hfill \faCopyright[regular]{} \, 2026 Freya Bruhin}
+\end{center}
+\end{document}
