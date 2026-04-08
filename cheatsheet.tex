@@ -1,12 +1,88 @@
 \documentclass[notumble,nocombine]{leaflet}
+
 \usepackage[T1]{fontenc}
 \usepackage{cmbright}
 \usepackage{graphicx}
 \usepackage[nolinks]{qrcode}
 \usepackage{xcolor}
 \usepackage{fontawesome5}
-\definecolor{codeblue}{rgb}{0.2,0.2,0.7}  % actually codeblue, better on printed paper
+\usepackage{minted}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{dirtree}
+%           offset  width sep   rulewidth  dot-size
+\DTsetlength{0.25em}{1em}{0.2em}{0.3pt}{0pt}
+\usepackage{suffix}
+\definecolor{codeblue}{rgb}{0.2,0.2,0.7}
+\colorlet{codebluebright}{codeblue!50}
+\colorlet{highlightcolor}{cyan!20}
+
+% Manual syntax highlighting, from _minted/default.style.minted
+\definecolor{pygstr}{rgb}{0.73,0.13,0.13}
+\definecolor{pygattr}{rgb}{0.41,0.47,0.13}
+\definecolor{pygkw}{rgb}{0.00,0.50,0.00}
+\definecolor{pygnum}{rgb}{0.40,0.40,0.40}
+\definecolor{pygfunc}{rgb}{0.00,0.00,1.00}
+\definecolor{pygcomment}{rgb}{0.24,0.48,0.48}
+
+% Terminal output colors, for scripts/pytest_tex.py
+\colorlet{termyellow}{yellow!60!black}
+\colorlet{termgreen}{green!60!black}
+\colorlet{termred}{red!80!black}
+\colorlet{termcyan}{cyan!60!black}
+\colorlet{termblue}{blue!60!black}
+
+\newcommand*{\highlightbox}[2][highlightcolor]{\colorbox{#1}{#2}}
 \newcommand{\bold}[1]{\textbf{\textcolor{codeblue}{#1}}}
+\newcommand*{\mono}[2][codeblue]{\textcolor{#1}{\texttt{\detokenize{#2}}}}
+\newcommand*{\monot}[2][codeblue]{\textcolor{#1}{\texttt{#2}}}
+\newcommand{\monoskip}{\textcolor{codebluebright}{$\cdots$}}
+\newmintinline[py]{python}{formatcom=\color{codeblue}}
+\newmintinline[ini]{ini}{}
+\newcommand*{\inikey}[1]{\textcolor{pygattr}{\texttt{\detokenize{#1}}}}
+\newcommand*{\inieq}[1]{\textcolor{pygnum}{\texttt{=}}}
+\newcommand*{\inival}[1]{\textcolor{pygstr}{\texttt{\detokenize{#1}}}}
+\newcommand*{\inivalt}[1]{\textcolor{pygstr}{\texttt{#1}}}
+\newcommand*{\inisec}[1]{\textcolor{pygkw}{\texttt{\detokenize{#1}}}}
+
+\newcommand{\linksection}[2]{%
+  \section*{\makebox[\linewidth][s]{#2\hfill
+    \normalfont\normalsize
+    \textcolor{codeblue}{\texttt{pyte.st/#1}}%
+    \quad
+    \raisebox{-.2ex}{\textcolor{codeblue}{\qrcode[height=1.5\baselineskip]{https://pyte.st/#1}}}%
+  }}%
+}
+
+% https://tex.stackexchange.com/a/729325
+\newlength{\codespacelength}
+\settowidth{\codespacelength}{\texttt{\space}}
+\newcommand*{\codeindent}[1]{\hspace{#1\codespacelength}}
+
+% https://tex.stackexchange.com/a/258593 -> extra space at the beginning for balance
+\newcommand*{\codeskip}[1][0]{\codeindent{#1}\textcolor{codebluebright}{\sffamily\ldots}}
+\WithSuffix\newcommand\codeskip*{{\sffamily\kern\fontdimen3\font\codeskip}}
+
+% https://tex.stackexchange.com/questions/264588/how-can-one-semi-bold-a-small-group-of-normal-text-words
+\DeclareRobustCommand\sbseries{\fontseries{sb}\selectfont}
+\DeclareTextFontCommand{\textsb}{\sbseries}
+
+% https://stackoverflow.com/a/2553955
+\newcommand*{\seprule}[1]{%
+    \textcolor{codebluebright}{%
+        \rule[.5ex]{1em}{0.4pt}%
+        ~%
+        \textcolor{codeblue}{#1}%
+        ~%
+        \leavevmode\leaders\hbox{\rule[.5ex]{1pt}{0.4pt}}\hfill\kern0pt
+    }%
+}
+\newcommand*{\filenameheader}[1]{%
+    \seprule{\mono{#1}}%
+}
+\newcommand*{\filenameheadert}[1]{%
+    \seprule{\monot{#1}}%
+}
 
 \begin{document}
 \begin{center}
@@ -53,4 +129,360 @@ Tailored trainings are offered \bold{on-site} at your company (CH/DE/AT/\ldots{}
     \faGithub{} \, The-Compiler/pytest-cheat-sheet \\
     \faEnvelope{} \, freya@bruhin.software
 }
+
+\linksection{usage}{Invocation}
+
+\begin{itemize}[itemsep=0mm]
+    \item \mono{pytest}
+    \item \mono{pytest path/to/tests}
+    \item \monot{pytest \highlightbox{test\_file.py}}
+    \item \monot{pytest test\_file.py\textcolor{codebluebright}{::}test\_func}
+    \item \monot{pytest test\_file.py\textcolor{codebluebright}{::}TestClass}
+    \item \monot{pytest test\_file.py\textcolor{codebluebright}{::}TestClass\textcolor{codebluebright}{::}test\_meth}
+\end{itemize}
+
+\textbf{Naming conventions:} \highlightbox{\monot{test\_\monoskip{}.py}} and \monot{\monoskip{}\_test.py},
+\monot{test\monoskip{}} functions and \monot{Test\monoskip{}} classes \\
+(also classes deriving from \py{unittest.TestCase})
+
+\linksection{cli}{CLI options}
+\newcommand{\brightslash}{\textcolor{codebluebright}{/}}
+\begin{description}[labelwidth=7em, leftmargin=!, itemsep=0mm]
+    \item[\mono{-v} \brightslash{} \mono{--verbose}] More \textcolor{codeblue}{\textsb{v}}erbose output \\ (can be given multiple times)
+    \item[\mono{-q} \brightslash{} \mono{--quiet}] More \textcolor{codeblue}{\textsb{q}}uiet output (negates \mono{-v})
+    \item[\mono{-k} \emph{\mono[codebluebright]{expression}}] Run tests whose names contain the given \textcolor{codeblue}{\textsb{k}}eyword expression (supports \mono{and}, \mono{or}, \mono{not}, and parentheses)
+          % \item[\mono{-m}\hspace{.5em}] Run tests which have a given \textcolor{codeblue}{\textbf{m}}arker
+    \item[\mono{-h} \brightslash \mono{--help}] Show full help
+\end{description}
+
+
+\section{Outcomes}
+
+\begin{tabular}{lll}
+    PASSED  & \Large\textcolor{termgreen}{\texttt{.}} & All assertions passed, no exceptions   \\[.5em]
+    FAILED  & \textcolor{termred}{\texttt{F}}         & Assertion failed or exception occurred \\
+    ERROR   & \textcolor{termred}{\texttt{E}}         & Exception occurred outside of test     \\
+            &                                         & (e.g.\ in a \emph{fixture})            \\[.5em]
+    SKIPPED & \textcolor{termyellow}{\texttt{s}}      & The test was skipped                   \\
+            &                                         & (e.g.\ via \mono{@pytest.mark.skipif}) \\
+    XFAIL   & \textcolor{termyellow}{\texttt{x}}      & An expected failure occurred           \\
+    XPASS   & \textcolor{termyellow}{\texttt{X}}      & An unexpected success occurred         \\
+            &                                         & (expected to fail but passed)
+\end{tabular}
+
+\vspace{.5em}
+pytest 9 also introduces subtests with SUBPASSED (\textcolor{termgreen}{\texttt{u}}), SUBFAILED (\textcolor{termred}{\texttt{u}}), SUBSKIPPED (\textcolor{termyellow}{\texttt{-}}) \& SUBXFAIL (\textcolor{termyellow}{\texttt{y}}).
+Only SUBFAILED is visible by default, rest needs \mono{-v}.
+
+\linksection{layout}{Project layout}
+\begin{itemize}[itemsep=0pt]
+    \item \mono{tests/} outside of \mono{src/}, file layout 1:1 mirroring (roughly) of \mono{src/mypackage/}
+    \item \mono{conftest.py}: fixtures, plugin hooks, etc.
+    \item \mono{pytest.ini} or \mono{pyproject.toml}: config
+    \item \mono{__init__.py} files in \mono{src/myproject} and \mono{tests/}
+\end{itemize}
+
+\newcommand{\dinit}{\_\_init\_\_.py}
+
+\vspace{-.5em}
+\begin{minipage}{.45\linewidth}
+    \footnotesize
+    \dirtree{%
+        .1 myproject/.
+        .2 \textcolor{gray}{pytest.ini}.
+        .2 pyproject.toml.
+        .2 src/myproject/.
+        .3 \dinit.
+        .3 utils.py.
+        .3 export/.
+        .4 \dinit.
+        .4 jsonexport.py.
+        .4 yamlexport.py.
+        .2 \highlightbox{tests/}.
+        .3 \codeskip*.
+    }
+\end{minipage}
+\begin{minipage}{.49\linewidth}
+    \footnotesize
+    \dirtree{%
+        .1 \highlightbox{tests/}.
+        .2 \dinit.
+        .2 conftest.py.
+        .2 test\_utils.py.
+        .2 export/.
+        .3 \dinit.
+        .3 conftest.py.
+        .3 test\_jsonexport.py.
+        .3 test\_yamlexport.py.
+    }
+\end{minipage}
+\vspace{-1em}
+
+\linksection{config}{Configuration}
+\begin{itemize}[itemsep=0pt]
+    \item \inisec{[pytest]} in (\mono{.})\mono{pytest.ini}
+    \item \inisec{[tool.pytest.ini_options]} in \mono{pyproject.toml}
+    \item pytest 9+: \inisec{[pytest]} in (\mono{.})\mono{pytest.toml}
+    \item pytest 9+: \inisec{[tool.pytest]} in \mono{pyproject.toml}
+    \item \inisec{[pytest]} in \mono{tox.ini}
+    \item \inisec{[tool.pytest]} in \mono{setup.cfg} (deprecated)
+\end{itemize}
+
+%\section{CLI vs. config}
+%
+%\begin{minipage}{.52\linewidth}
+%Set config opts from CLI: \\
+%\monot{pytest~\highlightbox{-o option=value}}
+%\end{minipage}
+%\begin{minipage}{.47\linewidth}
+%Set CLI opts from config: \\
+%\ini{addopts = ...} \\ (use \inikey{testpaths} for paths)
+%\end{minipage}
+
+\vspace{-1.5em}
+\section{Strict mode}
+pytest 9: \ini{strict = true} enables: \vspace{-.5em}
+
+\begin{itemize}[itemsep=0pt]
+    \item \inikey{strict_config} (error on unknown options)
+    \item \inikey{strict_markers} (error on unknown markers)
+    \item \inikey{strict_parametrization_ids} \\ (error on duplicate test IDs)
+    \item \inikey{strict_xfail} (error on unexpected passes)
+\end{itemize}
+
+Older pytest versions: Set \ini{xfail_strict = true} and \ini{addopts = --strict-config --strict-markers}
+
+
+\linksection{filterwarnings}{filterwarnings}
+Turning warning into errors, but ignoring known warnings (e.g.\ from dependencies):
+
+\begin{minted}[autogobble]{ini}
+      [pytest]
+      filterwarnings =
+          error
+    \end{minted}
+\vspace{-1em}
+\hspace{3em}$\downarrow{}$ action \hspace{3.1em} $\downarrow{}$ message regex
+\vspace{-1em}
+\begin{minted}[gobble=6]{ini}
+          ignore:ham\(\) is deprecated: \
+                DeprecationWarning:somelib
+    \end{minted}
+\vspace{-.8em}
+\hspace{5em} $\uparrow{}$ warning category \hspace{1em} $\uparrow{}$ module
+\vspace{-1em}
+
+\linksection{raises}{pytest.raises}
+
+\begin{minted}[autogobble]{python}
+    with pytest.raises(ValueError):
+        parse_percentage("abc%")
+\end{minted}
+
+Similarly, \py{pytest.warns} checks for Python warnings.
+
+Checking the exception message against a regex pattern:
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+    with pytest.raises(ValueError, |\highlightbox{match=\PYG{s}{r\PYGZdq{}\codeskip\PYGZdq{}}}|):
+        |\codeskip|
+\end{minted}
+
+% VS Code workaround
+\if 0
+    )
+    \end{minted}\fi
+
+Getting the exception info object:
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+    with pytest.raises(ValueError) |\highlightbox{\PYG{k}{as} excinfo}|:
+        parse_percentage("abc%")
+    assert str(excinfo.value) == "..."
+\end{minted}
+
+\textbf{Note:} The \py{assert} must be \textsb{outside} the \py{with} block!
+
+
+\linksection{approx}{pytest.approx}
+
+Floating point comparisons need a tolerance:
+\vspace{-.6em}
+
+\begin{minted}[autogobble, highlightlines=2]{python}
+    res = add(0.2, 0.1)
+    assert res == pytest.approx(0.3)
+\end{minted}
+\vspace{-.6em}
+
+Can override rel./abs.\ tolerance, e.g.\ 20 \textpm{} 2\textdegree: \\
+\py[escapeinside=||]{assert temperature == pytest.approx(20, abs=2)}
+default: 1e-6 relative / 1e-12 absolute
+
+Supports various data types: Sequences of numbers \\ (e.g.\ lists or tuples), dictionary values, \mono{numpy} arrays
+
+\linksection{skipping}{Skip and xfail}
+\textbf{Skip a test if}:
+\begin{itemize}[itemsep=0pt]
+    \item It cannot run at all on a certain platform
+    \item It cannot run because a dependency is missing
+\end{itemize}
+
+\vspace{-.5em}
+$\Rightarrow$ Test function is not run, result is \enquote{skipped} (\textcolor{termyellow}{\texttt{s}})
+
+Use \py{@pytest.mark.skip} (instead of \mono{skipif}) \\ for unconditional skipping.
+\vspace{-.5em}
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+    @pytest.mark.skipif(
+        # condition
+        sys.platform == "win32",
+        # text shown with -v
+        reason="Linux only",
+    )
+    def test_linux():
+        |\codeskip|
+\end{minted}
+\vspace{-.5em}
+
+Skip from inside a test or fixture function by calling \py{pytest.skip(reason)}.
+\vspace{1em}
+
+\textbf{\enquote{xfail} (\enquote{expected to fail}) a test if}:
+\begin{itemize}[itemsep=0pt]
+    \item The implementation is currently lacking
+    \item It fails on a certain platform but should work
+\end{itemize}
+
+\vspace{-.5em}
+$\Rightarrow$ Test function is run, but result is \enquote{xfailed} (\textcolor{termyellow}{\texttt{x}}), \\ \phantom{$\Rightarrow$} instead of failed (\textcolor{termred}{\texttt{F}}). Unexpected pass: XPASS (\textcolor{termyellow}{\texttt{X}}).
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+    @pytest.mark.xfail(
+        # condition optional
+        reason="see #1234",
+    )
+    def test_new_api():
+        |\codeskip|
+\end{minted}
+
+Use \mono{pytest.raises} to test a \enquote{bad case} but \textsb{intended behavior}. Use \mono{pytest.mark.xfail} to mark a test where the implementation behaves in \textsb{unintended} ways: The test \textsb{should work}, but currently does not (e.g.\ upstream bug).
+
+\linksection{parametrize}{Parametrization}
+
+\begin{minted}[autogobble]{python}
+    @pytest.mark.parametrize("a, b, expected", [
+        (1, 2, 3),
+        (2, 3, 5),
+    ])
+    def test_add(a, b, expected):
+        assert add(a, b) == expected
+\end{minted}
+
+\linksection{mathspp-param}{Permutations}
+\begin{minted}[autogobble]{python}
+    @pytest.mark.parametrize("a", [1, 2])
+    @pytest.mark.parametrize("b", [3, 4])
+    def test_permutations(a, b):
+        assert add(a, b) == a + b
+\end{minted}
+
+Test runs 4 times: 1 + 3 \quad 1 + 4 \quad 2 + 3 \quad 2 + 4.
+
+Can be useful for bool flags (e.g. \py{strict=True/False} where all cases should behave the same).
+
+\vspace{-1em}
+\linksection{param}{pytest.param}
+
+Instead of tuples, \py{pytest.param} objects can be passed to \mono{parametrize}, which additionally take \mono{marks} and \mono{id}:
+
+\begin{minted}[highlightlines=2-6]{python}
+@pytest.mark.parametrize("a, b, op, res", [
+    pytest.param(
+        2, 3, "**", 8,
+        marks=pytest.mark.xfail(reason="..."),
+        id="pow",
+    ),
+    pytest.param(1, 2, "+", 3, id="add"),
+    pytest.param(3, 1, "-", 2, id="sub"),
+])
+def test_calc(a, b, op, res):
+    assert calc(a, b, op) == res
+\end{minted}
+
+\begin{tabular}{ll}
+\textsb{Before:} & \textsb{After:} \\
+\mono{test_calc[2-3-**-8]} (\textcolor{termred}{\texttt{F}}) & \monot{test\_calc[\highlightbox{pow}]} \highlightbox{(\textcolor{termyellow}{\texttt{x}})} \\[.5em]
+\mono{test_calc[1-2-+-3]} & \monot{test\_calc[\highlightbox{add}]} \\[.3em]
+\mono{test_calc[3-1---2]} & \monot{test\_calc[\highlightbox{sub}]}
+\end{tabular}
+
+
+\section{Reusing marks}
+A mark can also be stored in a variable and reused:
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+  skip_windows = pytest.mark.skipif(
+      sys.platform == "win32",
+      reason="Linux only",
+  )
+\end{minted}
+
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble,escapeinside=||]{python}
+    @skip_windows
+    def test_linux_1():
+        |\codeskip|
+    \end{minted}
+\end{minipage}
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble,escapeinside=||]{python}
+    @skip_windows
+    def test_linux_2():
+        |\codeskip|
+    \end{minted}
+\end{minipage}
+
+\linksection{mark-class-mod}{Marking classes}
+Decorators can be applied to classes as well as functions:
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+        @pytest.mark.skipif(|\codeskip*|)
+        class TestLinux:
+            def test_linux_1(self):
+                |\codeskip|
+
+            def test_linux_2(self):
+                |\codeskip|
+        \end{minted}
+% VS Code workaround
+\if 0
+    )
+    \end{minted}\fi
+To apply a mark to an entire test file,
+a special \mono{pytestmark} global variable can be set to a mark, or a list of marks:
+\vspace{1em}
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+      pytestmark = pytest.mark.skipif(
+          sys.platform == "win32",
+          reason="Linux only"
+      )
+      \end{minted}
+
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble, escapeinside=||]{python}
+      def test_one():
+          |\codeskip|
+          \end{minted}
+\end{minipage}
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble, escapeinside=||]{python}
+      def test_two():
+          |\codeskip|
+    \end{minted}
+\end{minipage}
+
+
 \end{document}
