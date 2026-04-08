@@ -2,20 +2,29 @@
 
 \usepackage[T1]{fontenc}
 \usepackage{cmbright}
+\usepackage{microtype}
+\DisableLigatures{encoding = T1, family = tt*}  % no ligatures for monospace
 \usepackage{graphicx}
 \usepackage[nolinks]{qrcode}
 \usepackage{xcolor}
 \usepackage{fontawesome5}
+\newcommand*{\bluefaicon}[2][]{\hspace{.1em}\textcolor{codeblue#1}{\faIcon{#2}}\hspace{.1em}}
 \usepackage{minted}
+\setminted{highlightcolor={highlightcolor}}
 \usepackage{enumitem}
 \usepackage{csquotes}
+\usepackage{colortbl}
 \usepackage{dirtree}
 %           offset  width sep   rulewidth  dot-size
 \DTsetlength{0.25em}{1em}{0.2em}{0.3pt}{0pt}
 \usepackage{suffix}
 \definecolor{codeblue}{rgb}{0.2,0.2,0.7}
+\definecolor{bruhinblue}{rgb}{0.11,0.21,0.37}
+\colorlet{orangebg}{orange!20}
 \colorlet{codebluebright}{codeblue!50}
 \colorlet{highlightcolor}{cyan!20}
+\colorlet{highlightcolorred}{red!20}
+\colorlet{highlightcolorold}{highlightcolor!80!gray}
 
 % Manual syntax highlighting, from _minted/default.style.minted
 \definecolor{pygstr}{rgb}{0.73,0.13,0.13}
@@ -82,6 +91,21 @@
 }
 \newcommand*{\filenameheadert}[1]{%
     \seprule{\monot{#1}}%
+}
+
+\usepackage{tikz}
+\usetikzlibrary{intersections,positioning,backgrounds,fit,arrows,arrows.meta,shapes.symbols,shapes.misc}
+\tikzset{
+    pynode/.style={rectangle, thick, minimum height=8mm},
+    bluenode/.style={pynode, draw=codeblue, text=codeblue, fill=codebluebg},
+    bluenodebright/.style={pynode, draw=codebluebright, text=codebluebright, fill=codebluebg!50},
+    marker/.style={draw=violet!60, fill=violet!5, rounded corners=2.5mm, text=violet, font=\small},
+    fixture/.style={pynode, draw=cyan!60, fill=cyan!5, rounded corners=0mm},
+    fixtureval/.style={thick, circle, draw=red!60, fill=red!5, rounded corners=0mm},
+    test/.style={pynode, draw=bruhinblue!60, fill=bruhinblue!5},
+    every path/.style={bruhinblue, thick, rounded corners=2mm},
+    inherits/.style={-{Triangle[open]}},
+    >=latex,
 }
 
 \begin{document}
@@ -417,10 +441,10 @@ def test_calc(a, b, op, res):
 \end{minted}
 
 \begin{tabular}{ll}
-\textsb{Before:} & \textsb{After:} \\
-\mono{test_calc[2-3-**-8]} (\textcolor{termred}{\texttt{F}}) & \monot{test\_calc[\highlightbox{pow}]} \highlightbox{(\textcolor{termyellow}{\texttt{x}})} \\[.5em]
-\mono{test_calc[1-2-+-3]} & \monot{test\_calc[\highlightbox{add}]} \\[.3em]
-\mono{test_calc[3-1---2]} & \monot{test\_calc[\highlightbox{sub}]}
+    \textsb{Before:}                                             & \textsb{After:}                                                                            \\
+    \mono{test_calc[2-3-**-8]} (\textcolor{termred}{\texttt{F}}) & \monot{test\_calc[\highlightbox{pow}]} \highlightbox{(\textcolor{termyellow}{\texttt{x}})} \\[.5em]
+    \mono{test_calc[1-2-+-3]}                                    & \monot{test\_calc[\highlightbox{add}]}                                                     \\[.3em]
+    \mono{test_calc[3-1---2]}                                    & \monot{test\_calc[\highlightbox{sub}]}
 \end{tabular}
 
 
@@ -449,6 +473,7 @@ A mark can also be stored in a variable and reused:
     \end{minted}
 \end{minipage}
 
+\vspace{-1em}
 \linksection{mark-class-mod}{Marking classes}
 Decorators can be applied to classes as well as functions:
 
@@ -467,7 +492,6 @@ Decorators can be applied to classes as well as functions:
     \end{minted}\fi
 To apply a mark to an entire test file,
 a special \mono{pytestmark} global variable can be set to a mark, or a list of marks:
-\vspace{1em}
 
 \begin{minted}[autogobble,escapeinside=||]{python}
       pytestmark = pytest.mark.skipif(
@@ -488,6 +512,424 @@ a special \mono{pytestmark} global variable can be set to a mark, or a list of m
           |\codeskip|
     \end{minted}
 \end{minipage}
+\vspace{.25em}
 
+Skip all tests in a file unconditionally:
+
+\begin{minted}[autogobble]{python}
+    pytestmark = pytest.mark.skip("WIP")
+\end{minted}
+
+Skip on a missing import:
+
+\begin{minted}[autogobble]{python}
+    pexpect = pytest.importorskip("pexpect")
+\end{minted}
+
+This does \py{import pexpect}, but the test module is skipped on \py{ModuleNotFoundError}.
+
+\linksection{fixtures}{Fixtures}
+
+pytest calls the fixture function to inject a dependency into the test function (with an arg of the same name):
+\vspace{-.5em}
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+    @pytest.fixture
+    def |\highlightbox[highlightcolor!80!black]{rpn}|() -> RPNCalc:
+        """RPN calculator with a default config."""
+        return RPNCalc(Config())
+
+    def test_empty_stack(|\highlightbox{rpn}|: RPNCalc):
+        assert rpn.stack == []
+\end{minted}
+
+Imagine pytest running your test like: \\[.25em]
+{\color{codeblue}\mintinline[escapeinside=||]{python}{test_empty_stack(|\highlightbox{rpn\vphantom{()}}|=|\highlightbox[highlightcolor!80!black]{rpn()}|)}}
+\vspace{.5em}
+
+Useful pytest arguments:
+\vspace{-.5em}
+
+\begin{description}[itemsep=0pt]
+    \item[\mono{--fixtures}] List all available fixtures
+    \item[\mono{--fixtures-per-test}] \strut\\ Show which fixtures are used by which tests
+    \item[\mono{--setup-show}] \strut\\ Show setup/teardown of fixtures during test
+\end{description}
+
+\linksection{conftest}{conftest.py}
+
+You can move fixture functions into \mono{conftest.py}:
+
+\begin{itemize}[itemsep=0pt]
+    \item Automatically discovered by pytest.
+    \item Visible to modules in same or sub directory.
+    \item Put hooks and cross-module used fixtures into conftest file(s) but \textbf{don't import} from them \\ (exception: classes for type annotations).
+\end{itemize}
+
+\dirtree{%
+    .1 myproject/tests/.
+    .2 export/.
+    .3 \highlightbox{conftest.py}\vspace{-1pt}.
+    .3 \highlightbox{test\_jsonexport.py}.
+    .3 \highlightbox[white]{test\_yamlexport.py}.
+    .2 \highlightbox[white]{conftest.py}.
+    .2 \highlightbox[highlightcolorred]{test\_utils.py}.
+    .2 \codeskip*.
+}
+
+\linksection{fixt-override}{Fixture visibility}
+
+Fixtures defined\ldots{}
+\begin{itemize}[itemsep=0pt]
+    \item \ldots{}as methods of a test class are available only to test
+          methods on that class.
+    \item \ldots{}in a test module are available only to tests in that
+          module.
+    \item \ldots{}in a \mono{conftest.py} file are available to tests in
+          that directory and subdirectories.
+    \item \ldots{}in a plugin (or built into pytest) are available everywhere.
+\end{itemize}
+
+Fixtures in a more specific location shadow those in a more general location.
+
+\linksection{fixt-yield}{Cleanup in fixtures}
+A fixture can use \py{yield} instead of \py{return}
+to run cleanup steps after the test. Everything before the \py{yield} is setup,
+at the \py{yield} the test function runs, everything after is teardown:
+
+\begin{minted}[autogobble,highlightlines={5,8,9}]{python}
+    @pytest.fixture
+    def connected_client() -> Iterator[Client]:
+        client = Client()
+        client.connect()
+        yield client
+        client.disconnect()
+
+    def test_client(connected_client: Client):
+        print("in the test")
+\end{minted}
+
+\begin{tikzpicture}[remember picture, overlay]
+    \node [fixture, minimum height=9mm, minimum width=2cm] (fixt1o) at (6, 3.43) {\scriptsize setup};
+    \node [test, minimum height=0, minimum width=2cm, below=-.2pt of fixt1o, align=left] (callo) {\scriptsize call};
+    \node [fixture, minimum height=0, minimum width=2cm, below=-.2pt of callo, align=left] (fixt2o) {\scriptsize teardown};
+\end{tikzpicture}
+
+\pagebreak
+
+\linksection{fixt-scope}{Fixture caching}
+
+Fixture functions can declare a caching scope:
+
+\begin{minted}[autogobble,escapeinside=||,highlightlines=1]{python}
+    @pytest.fixture(scope="module")
+    def rpn() -> RPNCalc:
+        time.sleep(2)
+        return RPNCalc(Config())
+
+    def test_a(rpn: RPNCalc):
+        rpn.stack.append(42)
+        assert rpn.stack == [42]
+
+    def test_b(rpn: RPNCalc):
+        assert not rpn.stack
+\end{minted}
+
+\begin{centering}
+    \begin{tikzpicture}
+        \node [fixture, minimum width=2.75cm] (rpn) {\mono{rpn}};
+        \node [above=0.1cm of rpn, text width=2.75cm] {Function scope:};
+        \node [fixtureval, below=5mm of rpn, xshift=-2em] (rpnval11) {\scriptsize \mono{rpn()}};
+        \node [fixtureval, below=5mm of rpn, xshift=2em] (rpnval12) {\scriptsize \mono{rpn()}};
+        \node [test, below=5mm of rpnval11] (test11) {\mono{test_a}};
+        \node [test, below=5mm of rpnval12] (test12) {\mono{test_b}};
+
+        \node [above=0.6mm of rpnval11.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+        \node [above=0.6mm of rpnval12.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+
+        \draw [-] (rpnval11) -- (rpnval11 |- rpn.south);
+        \draw [-] (rpnval12) -- (rpnval12 |- rpn.south);
+        \draw [->] (test11) -- (rpnval11);
+        \draw [->] (test12) -- (rpnval12);
+
+
+        \node [fixture, minimum width=2.75cm, right=0.4cm of rpn] (rpn2) {\mono{rpn}};
+        \node [above=0.1cm of rpn2, text width=2.75cm] {Module scope:};
+        \node [fixtureval, below=5mm of rpn2] (rpnval2) {\scriptsize \mono{rpn()}};
+        \node [test, below=5mm of rpnval2, xshift=-2em] (test21) {\mono{test_a}};
+        \node [test, below=5mm of rpnval2, xshift=2em] (test22) {\mono{test_b}};
+
+        \node [above=0.6mm of rpnval2.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+
+        \draw [-] (rpnval2) -- (rpn2);
+        \draw [->] (test21) -- (rpnval2);
+        \draw [->] (test22) -- (rpnval2);
+    \end{tikzpicture}
+\end{centering}
+\vspace{1em}
+
+\textbf{Available scopes:}
+\mono[pygstr]{"function"} (default),
+\mono[pygstr]{"class"},
+\mono[pygstr]{"module"},
+\mono[pygstr!50!white]{"package"} (some gotchas),
+\mono[pygstr]{"session"}.
+
+\vspace{.5em}
+\textbf{Beware:}
+
+\begin{minipage}[t]{.44\linewidth}
+    \begin{description}[leftmargin=!, labelwidth=.7em, itemsep=0pt]
+        \item [+] Faster tests (4s $\rightarrow$ 2s)
+        \item [--] Less isolation between tests, \mono{test_b} fails:
+    \end{description}
+\end{minipage}
+\hspace{2mm}
+\begin{minipage}[t]{.45\linewidth}
+    \begin{minted}[escapeinside=||,autogobble,highlightlines=3,highlightcolor=highlightcolorred]{python}
+        def test_b(rpn: |\codeskip|):
+        >   assert not rpn.stack
+        E   assert not [42]
+    \end{minted}
+    % VS Code workaround
+    \if 0
+        )
+        \end{minted}\fi
+\end{minipage}
+\vspace{0.5em}
+
+\textbf{How to avoid this pitfall?}
+
+\begin{itemize}[itemsep=0pt]
+    \item Can you make the return value immutable somehow?
+    \item Can you copy it (e.g. \mono{deepcopy})?
+    \item Can you reset the state between tests with a second fixture? Or maybe even take a snapshot before the test and restore it after?
+\end{itemize}
+
+\section{Combining fixture scopes}
+
+Using two fixtures, you can combine the benefits of caching and isolation:
+
+\begin{minted}[autogobble, escapeinside=||,highlightlines={1,8}]{python}
+@pytest.fixture(scope="module")
+def rpn_instance() -> RPNCalc:
+    time.sleep(2)
+    return RPNCalc(Config())
+
+@pytest.fixture
+def rpn(rpn_instance: RPNCalc):
+    rpn_instance.stack.clear()
+    return rpn_instance
+
+def test_a(rpn: RPNCalc):
+    rpn.stack.append(42)
+    assert rpn.stack == [42]
+
+def test_b(rpn: RPNCalc):
+    assert not rpn.stack
+\end{minted}
+
+\mono{rpn_instance} uses caching and does some sort of slow operation
+(initializing database, starting external process, initializing a device, etc.),
+but it's not used directly in tests. Instead, \mono{rpn} is used, which in some
+way resets the state of the underlying object before every test.
+
+\begin{center}
+    \begin{tikzpicture}
+        \node [fixture, minimum width=3cm] (instance) {\mono{rpn_instance}};
+        \node [fixtureval, below=5mm of instance] (rpnval) {\scriptsize \phantom{\mono{rpn()}}};
+        \node [above=0.6mm of rpnval.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+        \draw [-] (instance) -- (rpnval);
+
+        \node [fixture, minimum width=2cm, below=5mm of rpnval, xshift=3em] (rpna) {\mono{rpn}};
+        \node [fixture, minimum width=2cm, below=5mm of rpnval, xshift=-3em] (rpnb) {\mono{rpn}};
+        \node [test, minimum width=2cm, below=5mm of rpna] (testa) {\mono{test_a}};
+        \node [test, minimum width=2cm, below=5mm of rpnb] (testb) {\mono{test_b}};
+        \draw [->] (rpna) -- (rpnval);
+        \draw [->] (rpnb) -- (rpnval);
+        \draw [->] (testa) -- (rpna);
+        \draw [->] (testb) -- (rpnb);
+    \end{tikzpicture}
+\end{center}
+\pagebreak
+
+\linksection{capturing}{Capturing fixtures}
+\begin{description}
+    \item[{\mono{capsys}}~] Capturing stdout/stderr in a test by overriding \py{sys.stdout},
+          e.g.\ for \py[escapeinside=||]{print(|\codeskip*|)}.
+    \item[\mono{capfd}~] \textsb{Capturing stdout/stderr in a test at file descriptor level,}
+          e.g.\ for subprocesses or libraries printing from C code. \\[.5em]
+          Type for both: \monot{pytest.CaptureFixture[\textcolor{pygkw}{str}]}
+    \item[{\parbox[t]{6.5em}{\mono{capsysbinary}/\\\mono{capfdbinary}}}]
+          \parbox[t]{6cm}{
+              Like \mono{capsys}/\mono{capfd}, \\ but for binary data. \\
+              Type: \monot{pytest.CaptureFixture[\textcolor{pygkw}{bytes}]}
+          }
+    \item[\mono{caplog}~] \textsb{Capturing logging output from a test.} \\
+          Type: \mono{pytest.LogCaptureFixture}
+\end{description}
+\vspace{-.5em}
+
+\mono{capsys} vs. \mono{capfd}: If in doubt, use \mono{capfd} to ensure everything is captured
+(built-in pytest capturing also uses \mono{fd} by default).
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+    def test_capfd(capfd):
+        subprocess.run(["ls"])
+        out, err = capfd.readouterr()
+        assert out == "..."
+\end{minted}
+
+\vspace{-.5em}
+Every process has \emph{two} outputs: \mono{stdout} and \mono[termred]{stderr}:
+\vspace{-.5em}
+
+\begin{minted}[autogobble,escapeinside=||]{text}
+    $ ls doesnotexist /home
+    |\textcolor{termred}{ls: cannot access 'doesnotexist': \codeskip}|
+    |\textcolor{codeblue}{/home:}|
+    |\textcolor{codeblue}{username}|
+\end{minted}
+
+\begin{minted}[autogobble,escapeinside=||]{text}
+    $ ls doesnotexist /home |\highlightbox{> /dev/null}|
+    |\textcolor{termred}{ls: cannot access 'doesnotexist': \codeskip}|
+\end{minted}
+\vspace{-.5em}
+
+We get them separately with \mono{capfd.readouterr()}:
+
+\begin{tabular}{l>{\columncolor{highlightcolor}}l>{\columncolor{highlightcolorred}}l}
+                                       & stdout       & \highlightbox[highlightcolorred]{stderr} \\[.75em]
+    \py{print("out 1")}                & \mono{out 1} &                                          \\
+    \py{print("out 2")}                & \mono{out 2} &                                          \\
+    \py{print("err", file=sys.stderr)} &              & \mono{err}                               \\
+\end{tabular}
+
+\vspace{-.25em}
+\hspace{.2em} \py{out, err = capfd.readouterr()}  \\[.25em]
+\hspace{1em} $\Rightarrow$ \hspace{.5em} \highlightbox{\mono{out}}: \py{"out 1\nout2\n"} \\[-.13em]
+\hspace{1em} \phantom{$\Rightarrow$} \hspace{.5em} \highlightbox[highlightcolorred]{\monot{err\vphantom{t}}}: \py{"err\n"} \\[1em]
+
+\mono{caplog} lets you access logging records. The \mono{.records} attribute provides full records which can be inconvenient (timestamps, etc.),
+convenience attributes are available:
+
+\vspace{-.5em}
+\begin{minted}[autogobble,highlightlines={3,7-10}]{python}
+def test_msgs(caplog: pytest.LogCaptureFixture):
+    logging.warning("some msg")
+    assert caplog.messages == ["some msg"]
+
+def test_tpl(caplog: pytest.LogCaptureFixture):
+    logging.warning("some msg")
+    assert caplog.record_tuples == [
+        # logger, loglevel,       message
+        ("root", logging.WARNING, "some msg"),
+    ]
+\end{minted}
+
+\pagebreak
+\linksection{tmp-path}{tmp\_path}
+A \textbf{fresh empty directory} for every pytest invocation and every test.
+
+\begin{itemize}[itemsep=0pt]
+    \item Store generated input files for tested code
+    \item Store output files, e.g.\ measurement data, \\ screenshots, etc.
+    \item Access data even after pytest run is done, but no need for manual cleanup (3 directories are kept)
+\end{itemize}
+
+\begin{minted}[escapeinside=||]{python}
+   from pathlib import Path
+
+   def test_temp(|\highlightbox{tmp\_path: Path}|):
+       |\codeskip|
+\end{minted}
+\vspace{1em}%
+\dirtree{%
+    .1 /tmp/ \textsf{\footnotesize{\hspace{1em} \textcolor{gray}{(system-wide temp directory)}}}.
+    .2 pytest-of-freya/.
+    .3 \highlightbox[highlightcolorold]{pytest-1/}\vspace{-1pt}.
+    .4 \highlightbox[highlightcolorold]{test\_temp0/}.
+    .5 \codeskip*.
+    .3 \highlightbox{pytest-2/}\vspace{-1pt}.
+    .4 \highlightbox{test\_temp0/}.
+    .5 \codeskip*.
+    .3 \codeskip*.
+}
+
+\mono{tmp_path}:
+
+Based on Python's \mono{pathlib.Path}, a more object-oriented and convenient \mono{os.path} alternative:
+
+\begin{minted}[autogobble]{python}
+        dir_path = pathlib.Path("output")
+        dir_path.mkdir(exist_ok=True)
+        file_path = dir_path / "output.txt"
+        file_path.write_text("Hello world!")
+      \end{minted}
+
+\bluefaicon{book} \monot{docs.python.org/3/library/pathlib.html}
+\vspace{.65em}
+
+\mono[codebluebright]{tmpdir}:
+
+\textcolor{gray}{%
+    Based on \mono[codebluebright]{py.path.local} from the \mono[codebluebright]{py} library (\mono[codebluebright]{pylib}) instead,
+    since \mono[codebluebright]{pathlib} only exists since Python 3.4. Should not be used in new code.
+}
+
+\linksection{monkeypatch}{Monkeypatching}
+
+The \mono{monkeypatch} fixture allows to temporarily change state for the
+\textbf{duration of a test function execution}:
+
+\begin{itemize}[itemsep=0pt]
+    \item Modify attributes on objects, classes or modules \\ (\mono{setattr}, \mono{delattr}). \\
+          This also works with functions/methods, as those are attributes of the respective module/class/instance.
+    \item Modify environment variables (\mono{setenv}, \mono{delenv})
+    \item Change current directory (\mono{chdir})
+    \item Modify dictionaries (\mono{setitem}, \mono{delitem})
+    \item Adjust \mono{sys.path} for importing (\mono{syspath_prepend})
+\end{itemize}
+
+\begin{minted}[autogobble,escapeinside=||,highlightlines=7-12]{python}
+def print_info():
+    path = os.environ.get("PATH", "")
+    print(f"platform: {sys.platform}")
+    print(f"PATH: {path}")
+
+def test_a(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        sys,         # where to patch
+        "platform",  # attribute name (str!)
+        "MonkeyOS",  # new value
+    )
+    monkeypatch.setenv("PATH", "/zoo")
+    print_info()
+    assert False
+
+def test_b():
+    print_info()
+    assert False
+\end{minted}
+
+\vspace{1em}
+\begin{center}
+    \begin{tikzpicture}
+        \node [test, align=center, minimum width=7em] (test1) {\mono{test_a} \\ test};
+        \node [fixture, right=0.25 of test1, align=center, minimum width=7em] (teardown) {\mono{monkeypatch} \\ teardown};
+        \node [test, right=0.5 of teardown, align=center] (test2) {\mono{test_b} \\ test};
+
+        \node [align=center, below=0.25 of test1, xshift=4em] (text)
+        {\py{sys.platform == "MonkeyOS"} \\ \py{os.environ["PATH"] == "/zoo"}};
+
+        \draw [-, dotted] (test1) -- (teardown);
+        \draw [-, dotted] (teardown) -- (test2);
+
+        \begin{scope}[on background layer]
+            \node[fit=(test1)(teardown)(text), fill=orangebg, rounded corners] {};
+        \end{scope}
+    \end{tikzpicture}
+\end{center}
 
 \end{document}
