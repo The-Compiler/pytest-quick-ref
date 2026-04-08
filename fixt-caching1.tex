@@ -1,0 +1,89 @@
+
+\linksection{fixt-scope}{Fixture caching}
+
+Fixture functions can declare a caching scope:
+
+\begin{minted}[autogobble,escapeinside=||,highlightlines=1]{python}
+    @pytest.fixture(scope="module")
+    def rpn() -> RPNCalc:
+        time.sleep(2)
+        return RPNCalc(Config())
+
+    def test_a(rpn: RPNCalc):
+        rpn.stack.append(42)
+        assert rpn.stack == [42]
+
+    def test_b(rpn: RPNCalc):
+        assert not rpn.stack
+\end{minted}
+
+\begin{centering}
+    \begin{tikzpicture}
+        \node [fixture, minimum width=2.75cm] (rpn) {\mono{rpn}};
+        \node [above=0.1cm of rpn, text width=2.75cm] {Function scope:};
+        \node [fixtureval, below=5mm of rpn, xshift=-2em] (rpnval11) {\scriptsize \mono{rpn()}};
+        \node [fixtureval, below=5mm of rpn, xshift=2em] (rpnval12) {\scriptsize \mono{rpn()}};
+        \node [test, below=5mm of rpnval11] (test11) {\mono{test_a}};
+        \node [test, below=5mm of rpnval12] (test12) {\mono{test_b}};
+
+        \node [above=0.6mm of rpnval11.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+        \node [above=0.6mm of rpnval12.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+
+        \draw [-] (rpnval11) -- (rpnval11 |- rpn.south);
+        \draw [-] (rpnval12) -- (rpnval12 |- rpn.south);
+        \draw [->] (test11) -- (rpnval11);
+        \draw [->] (test12) -- (rpnval12);
+
+
+        \node [fixture, minimum width=2.75cm, right=0.4cm of rpn] (rpn2) {\mono{rpn}};
+        \node [above=0.1cm of rpn2, text width=2.75cm] {Module scope:};
+        \node [fixtureval, below=5mm of rpn2] (rpnval2) {\scriptsize \mono{rpn()}};
+        \node [test, below=5mm of rpnval2, xshift=-2em] (test21) {\mono{test_a}};
+        \node [test, below=5mm of rpnval2, xshift=2em] (test22) {\mono{test_b}};
+
+        \node [above=0.6mm of rpnval2.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+
+        \draw [-] (rpnval2) -- (rpn2);
+        \draw [->] (test21) -- (rpnval2);
+        \draw [->] (test22) -- (rpnval2);
+    \end{tikzpicture}
+\end{centering}
+\vspace{1em}
+
+\textbf{Available scopes:}
+\mono[pygstr]{"function"} (default),
+\mono[pygstr]{"class"},
+\mono[pygstr]{"module"},
+\mono[pygstr!50!white]{"package"} (some gotchas),
+\mono[pygstr]{"session"}.
+
+\vspace{.5em}
+\textbf{Beware:}
+
+\begin{minipage}[t]{.44\linewidth}
+    \begin{description}[leftmargin=!, labelwidth=.7em, itemsep=0pt]
+        \item [+] Faster tests (4s $\rightarrow$ 2s)
+        \item [--] Less isolation between tests, \mono{test_b} fails:
+    \end{description}
+\end{minipage}
+\hspace{2mm}
+\begin{minipage}[t]{.45\linewidth}
+    \begin{minted}[escapeinside=||,autogobble,highlightlines=3,highlightcolor=highlightcolorred]{python}
+        def test_b(rpn: |\codeskip|):
+        >   assert not rpn.stack
+        E   assert not [42]
+    \end{minted}
+    % VS Code workaround
+    \if 0
+        )
+        \end{minted}\fi
+\end{minipage}
+\vspace{0.5em}
+
+\textbf{How to avoid this pitfall?}
+
+\begin{itemize}[itemsep=0pt]
+    \item Can you make the return value immutable somehow?
+    \item Can you copy it (e.g. \mono{deepcopy})?
+    \item Can you reset the state between tests with a second fixture? Or maybe even take a snapshot before the test and restore it after?
+\end{itemize}

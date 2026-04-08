@@ -1,0 +1,107 @@
+\usepackage[T1]{fontenc}
+\usepackage{cmbright}
+\usepackage{microtype}
+\DisableLigatures{encoding = T1, family = tt*}  % no ligatures for monospace
+\usepackage{graphicx}
+\usepackage[nolinks]{qrcode}
+\usepackage{xcolor}
+\usepackage{fontawesome5}
+\newcommand*{\bluefaicon}[2][]{\hspace{.1em}\textcolor{codeblue#1}{\faIcon{#2}}\hspace{.1em}}
+\usepackage{minted}
+\setminted{highlightcolor={highlightcolor}}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{colortbl}
+\usepackage{dirtree}
+%           offset  width sep   rulewidth  dot-size
+\DTsetlength{0.25em}{1em}{0.2em}{0.3pt}{0pt}
+\usepackage{suffix}
+\definecolor{codeblue}{rgb}{0.2,0.2,0.7}
+\definecolor{bruhinblue}{rgb}{0.11,0.21,0.37}
+\colorlet{orangebg}{orange!20}
+\colorlet{codebluebright}{codeblue!50}
+\colorlet{highlightcolor}{cyan!20}
+\colorlet{highlightcolorred}{red!20}
+\colorlet{highlightcolorold}{highlightcolor!80!gray}
+
+% Manual syntax highlighting, from _minted/default.style.minted
+\definecolor{pygstr}{rgb}{0.73,0.13,0.13}
+\definecolor{pygattr}{rgb}{0.41,0.47,0.13}
+\definecolor{pygkw}{rgb}{0.00,0.50,0.00}
+\definecolor{pygnum}{rgb}{0.40,0.40,0.40}
+\definecolor{pygfunc}{rgb}{0.00,0.00,1.00}
+\definecolor{pygcomment}{rgb}{0.24,0.48,0.48}
+
+% Terminal output colors, for scripts/pytest_tex.py
+\colorlet{termyellow}{yellow!60!black}
+\colorlet{termgreen}{green!60!black}
+\colorlet{termred}{red!80!black}
+\colorlet{termcyan}{cyan!60!black}
+\colorlet{termblue}{blue!60!black}
+
+\newcommand*{\highlightbox}[2][highlightcolor]{\colorbox{#1}{#2}}
+\newcommand{\bold}[1]{\textbf{\textcolor{codeblue}{#1}}}
+\newcommand*{\mono}[2][codeblue]{\textcolor{#1}{\texttt{\detokenize{#2}}}}
+\newcommand*{\monot}[2][codeblue]{\textcolor{#1}{\texttt{#2}}}
+\newcommand{\monoskip}{\textcolor{codebluebright}{$\cdots$}}
+\newmintinline[py]{python}{formatcom=\color{codeblue}}
+\newmintinline[ini]{ini}{}
+\newcommand*{\inikey}[1]{\textcolor{pygattr}{\texttt{\detokenize{#1}}}}
+\newcommand*{\inieq}[1]{\textcolor{pygnum}{\texttt{=}}}
+\newcommand*{\inival}[1]{\textcolor{pygstr}{\texttt{\detokenize{#1}}}}
+\newcommand*{\inivalt}[1]{\textcolor{pygstr}{\texttt{#1}}}
+\newcommand*{\inisec}[1]{\textcolor{pygkw}{\texttt{\detokenize{#1}}}}
+
+\newcommand{\linksection}[2]{%
+  \section*{\makebox[\linewidth][s]{#2\hfill
+    \normalfont\normalsize
+    \textcolor{codeblue}{\texttt{pyte.st/#1}}%
+    \quad
+    \raisebox{-.2ex}{\textcolor{codeblue}{\qrcode[height=1.5\baselineskip]{https://pyte.st/#1}}}%
+  }}%
+}
+
+% https://tex.stackexchange.com/a/729325
+\newlength{\codespacelength}
+\settowidth{\codespacelength}{\texttt{\space}}
+\newcommand*{\codeindent}[1]{\hspace{#1\codespacelength}}
+
+% https://tex.stackexchange.com/a/258593 -> extra space at the beginning for balance
+\newcommand*{\codeskip}[1][0]{\codeindent{#1}\textcolor{codebluebright}{\sffamily\ldots}}
+\WithSuffix\newcommand\codeskip*{{\sffamily\kern\fontdimen3\font\codeskip}}
+
+% https://tex.stackexchange.com/questions/264588/how-can-one-semi-bold-a-small-group-of-normal-text-words
+\DeclareRobustCommand\sbseries{\fontseries{sb}\selectfont}
+\DeclareTextFontCommand{\textsb}{\sbseries}
+
+% https://stackoverflow.com/a/2553955
+\newcommand*{\seprule}[1]{%
+    \textcolor{codebluebright}{%
+        \rule[.5ex]{1em}{0.4pt}%
+        ~%
+        \textcolor{codeblue}{#1}%
+        ~%
+        \leavevmode\leaders\hbox{\rule[.5ex]{1pt}{0.4pt}}\hfill\kern0pt
+    }%
+}
+\newcommand*{\filenameheader}[1]{%
+    \seprule{\mono{#1}}%
+}
+\newcommand*{\filenameheadert}[1]{%
+    \seprule{\monot{#1}}%
+}
+
+\usepackage{tikz}
+\usetikzlibrary{intersections,positioning,backgrounds,fit,arrows,arrows.meta,shapes.symbols,shapes.misc}
+\tikzset{
+    pynode/.style={rectangle, thick, minimum height=8mm},
+    bluenode/.style={pynode, draw=codeblue, text=codeblue, fill=codebluebg},
+    bluenodebright/.style={pynode, draw=codebluebright, text=codebluebright, fill=codebluebg!50},
+    marker/.style={draw=violet!60, fill=violet!5, rounded corners=2.5mm, text=violet, font=\small},
+    fixture/.style={pynode, draw=cyan!60, fill=cyan!5, rounded corners=0mm},
+    fixtureval/.style={thick, circle, draw=red!60, fill=red!5, rounded corners=0mm},
+    test/.style={pynode, draw=bruhinblue!60, fill=bruhinblue!5},
+    every path/.style={bruhinblue, thick, rounded corners=2mm},
+    inherits/.style={-{Triangle[open]}},
+    >=latex,
+}

@@ -1,0 +1,48 @@
+
+\linksection{skipping}{Skip and xfail}
+\textbf{Skip a test if}:
+\begin{itemize}[itemsep=0pt]
+    \item It cannot run at all on a certain platform
+    \item It cannot run because a dependency is missing
+\end{itemize}
+
+\vspace{-.5em}
+$\Rightarrow$ Test function is not run, result is \enquote{skipped} (\textcolor{termyellow}{\texttt{s}})
+
+Use \py{@pytest.mark.skip} (instead of \mono{skipif}) \\ for unconditional skipping.
+\vspace{-.5em}
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+    @pytest.mark.skipif(
+        # condition
+        sys.platform == "win32",
+        # text shown with -v
+        reason="Linux only",
+    )
+    def test_linux():
+        |\codeskip|
+\end{minted}
+\vspace{-.5em}
+
+Skip from inside a test or fixture function by calling \py{pytest.skip(reason)}.
+\vspace{1em}
+
+\textbf{\enquote{xfail} (\enquote{expected to fail}) a test if}:
+\begin{itemize}[itemsep=0pt]
+    \item The implementation is currently lacking
+    \item It fails on a certain platform but should work
+\end{itemize}
+
+\vspace{-.5em}
+$\Rightarrow$ Test function is run, but result is \enquote{xfailed} (\textcolor{termyellow}{\texttt{x}}), \\ \phantom{$\Rightarrow$} instead of failed (\textcolor{termred}{\texttt{F}}). Unexpected pass: XPASS (\textcolor{termyellow}{\texttt{X}}).
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+    @pytest.mark.xfail(
+        # condition optional
+        reason="see #1234",
+    )
+    def test_new_api():
+        |\codeskip|
+\end{minted}
+
+Use \mono{pytest.raises} to test a \enquote{bad case} but \textsb{intended behavior}. Use \mono{pytest.mark.xfail} to mark a test where the implementation behaves in \textsb{unintended} ways: The test \textsb{should work}, but currently does not (e.g.\ upstream bug).

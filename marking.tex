@@ -1,0 +1,80 @@
+
+\section{Reusing marks}
+A mark can also be stored in a variable and reused:
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+  skip_windows = pytest.mark.skipif(
+      sys.platform == "win32",
+      reason="Linux only",
+  )
+\end{minted}
+
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble,escapeinside=||]{python}
+    @skip_windows
+    def test_linux_1():
+        |\codeskip|
+    \end{minted}
+\end{minipage}
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble,escapeinside=||]{python}
+    @skip_windows
+    def test_linux_2():
+        |\codeskip|
+    \end{minted}
+\end{minipage}
+
+\vspace{-1em}
+\linksection{mark-class-mod}{Marking classes}
+Decorators can be applied to classes as well as functions:
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+        @pytest.mark.skipif(|\codeskip*|)
+        class TestLinux:
+            def test_linux_1(self):
+                |\codeskip|
+
+            def test_linux_2(self):
+                |\codeskip|
+        \end{minted}
+% VS Code workaround
+\if 0
+    )
+    \end{minted}\fi
+To apply a mark to an entire test file,
+a special \mono{pytestmark} global variable can be set to a mark, or a list of marks:
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+      pytestmark = pytest.mark.skipif(
+          sys.platform == "win32",
+          reason="Linux only"
+      )
+      \end{minted}
+
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble, escapeinside=||]{python}
+      def test_one():
+          |\codeskip|
+          \end{minted}
+\end{minipage}
+\begin{minipage}{.49\linewidth}
+    \begin{minted}[autogobble, escapeinside=||]{python}
+      def test_two():
+          |\codeskip|
+    \end{minted}
+\end{minipage}
+\vspace{.25em}
+
+Skip all tests in a file unconditionally:
+
+\begin{minted}[autogobble]{python}
+    pytestmark = pytest.mark.skip("WIP")
+\end{minted}
+
+Skip on a missing import:
+
+\begin{minted}[autogobble]{python}
+    pexpect = pytest.importorskip("pexpect")
+\end{minted}
+
+This does \py{import pexpect}, but the test module is skipped on \py{ModuleNotFoundError}.

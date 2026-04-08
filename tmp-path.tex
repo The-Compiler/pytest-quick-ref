@@ -1,0 +1,49 @@
+
+\linksection{tmp-path}{tmp\_path}
+A \textbf{fresh empty directory} for every pytest invocation and every test.
+
+\begin{itemize}[itemsep=0pt]
+    \item Store generated input files for tested code
+    \item Store output files, e.g.\ measurement data, \\ screenshots, etc.
+    \item Access data even after pytest run is done, but no need for manual cleanup (3 directories are kept)
+\end{itemize}
+
+\begin{minted}[escapeinside=||]{python}
+   from pathlib import Path
+
+   def test_temp(|\highlightbox{tmp\_path: Path}|):
+       |\codeskip|
+\end{minted}
+\vspace{1em}%
+\dirtree{%
+    .1 /tmp/ \textsf{\footnotesize{\hspace{1em} \textcolor{gray}{(system-wide temp directory)}}}.
+    .2 pytest-of-freya/.
+    .3 \highlightbox[highlightcolorold]{pytest-1/}\vspace{-1pt}.
+    .4 \highlightbox[highlightcolorold]{test\_temp0/}.
+    .5 \codeskip*.
+    .3 \highlightbox{pytest-2/}\vspace{-1pt}.
+    .4 \highlightbox{test\_temp0/}.
+    .5 \codeskip*.
+    .3 \codeskip*.
+}
+
+\mono{tmp_path}:
+
+Based on Python's \mono{pathlib.Path}, a more object-oriented and convenient \mono{os.path} alternative:
+
+\begin{minted}[autogobble]{python}
+        dir_path = pathlib.Path("output")
+        dir_path.mkdir(exist_ok=True)
+        file_path = dir_path / "output.txt"
+        file_path.write_text("Hello world!")
+      \end{minted}
+
+\bluefaicon{book} \monot{docs.python.org/3/library/pathlib.html}
+\vspace{.65em}
+
+\mono[codebluebright]{tmpdir}:
+
+\textcolor{gray}{%
+    Based on \mono[codebluebright]{py.path.local} from the \mono[codebluebright]{py} library (\mono[codebluebright]{pylib}) instead,
+    since \mono[codebluebright]{pathlib} only exists since Python 3.4. Should not be used in new code.
+}

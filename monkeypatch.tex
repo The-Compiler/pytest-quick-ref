@@ -1,0 +1,54 @@
+
+\linksection{monkeypatch}{Monkeypatching}
+
+The \mono{monkeypatch} fixture allows to temporarily change state for the
+\textbf{duration of a test function execution}:
+
+\begin{itemize}[itemsep=0pt]
+    \item Modify attributes on objects, classes or modules \\ (\mono{setattr}, \mono{delattr}). \\
+          This also works with functions/methods, as those are attributes of the respective module/class/instance.
+    \item Modify environment variables (\mono{setenv}, \mono{delenv})
+    \item Change current directory (\mono{chdir})
+    \item Modify dictionaries (\mono{setitem}, \mono{delitem})
+    \item Adjust \mono{sys.path} for importing (\mono{syspath_prepend})
+\end{itemize}
+
+\begin{minted}[autogobble,escapeinside=||,highlightlines=7-12]{python}
+def print_info():
+    path = os.environ.get("PATH", "")
+    print(f"platform: {sys.platform}")
+    print(f"PATH: {path}")
+
+def test_a(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        sys,         # where to patch
+        "platform",  # attribute name (str!)
+        "MonkeyOS",  # new value
+    )
+    monkeypatch.setenv("PATH", "/zoo")
+    print_info()
+    assert False
+
+def test_b():
+    print_info()
+    assert False
+\end{minted}
+
+\vspace{1em}
+\begin{center}
+    \begin{tikzpicture}
+        \node [test, align=center, minimum width=7em] (test1) {\mono{test_a} \\ test};
+        \node [fixture, right=0.25 of test1, align=center, minimum width=7em] (teardown) {\mono{monkeypatch} \\ teardown};
+        \node [test, right=0.5 of teardown, align=center] (test2) {\mono{test_b} \\ test};
+
+        \node [align=center, below=0.25 of test1, xshift=4em] (text)
+        {\py{sys.platform == "MonkeyOS"} \\ \py{os.environ["PATH"] == "/zoo"}};
+
+        \draw [-, dotted] (test1) -- (teardown);
+        \draw [-, dotted] (teardown) -- (test2);
+
+        \begin{scope}[on background layer]
+            \node[fit=(test1)(teardown)(text), fill=orangebg, rounded corners] {};
+        \end{scope}
+    \end{tikzpicture}
+\end{center}

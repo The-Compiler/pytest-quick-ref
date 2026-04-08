@@ -1,0 +1,78 @@
+\linksection{layout}{Project layout}
+\begin{itemize}[itemsep=0pt]
+    \item \mono{tests/} outside of \mono{src/}, file layout 1:1 mirroring (roughly) of \mono{src/mypackage/}
+    \item \mono{conftest.py}: fixtures, plugin hooks, etc.
+    \item \mono{pytest.ini} or \mono{pyproject.toml}: config
+    \item \mono{__init__.py} files in \mono{src/myproject} and \mono{tests/}
+\end{itemize}
+
+\newcommand{\dinit}{\_\_init\_\_.py}
+
+\vspace{-.5em}
+\begin{minipage}{.45\linewidth}
+    \footnotesize
+    \dirtree{%
+        .1 myproject/.
+        .2 \textcolor{gray}{pytest.ini}.
+        .2 pyproject.toml.
+        .2 src/myproject/.
+        .3 \dinit.
+        .3 utils.py.
+        .3 export/.
+        .4 \dinit.
+        .4 jsonexport.py.
+        .4 yamlexport.py.
+        .2 \highlightbox{tests/}.
+        .3 \codeskip*.
+    }
+\end{minipage}
+\begin{minipage}{.49\linewidth}
+    \footnotesize
+    \dirtree{%
+        .1 \highlightbox{tests/}.
+        .2 \dinit.
+        .2 conftest.py.
+        .2 test\_utils.py.
+        .2 export/.
+        .3 \dinit.
+        .3 conftest.py.
+        .3 test\_jsonexport.py.
+        .3 test\_yamlexport.py.
+    }
+\end{minipage}
+\vspace{-1em}
+
+\linksection{config}{Configuration}
+\begin{itemize}[itemsep=0pt]
+    \item \inisec{[pytest]} in (\mono{.})\mono{pytest.ini}
+    \item \inisec{[tool.pytest.ini_options]} in \mono{pyproject.toml}
+    \item pytest 9+: \inisec{[pytest]} in (\mono{.})\mono{pytest.toml}
+    \item pytest 9+: \inisec{[tool.pytest]} in \mono{pyproject.toml}
+    \item \inisec{[pytest]} in \mono{tox.ini}
+    \item \inisec{[tool.pytest]} in \mono{setup.cfg} (deprecated)
+\end{itemize}
+
+%\section{CLI vs. config}
+%
+%\begin{minipage}{.52\linewidth}
+%Set config opts from CLI: \\
+%\monot{pytest~\highlightbox{-o option=value}}
+%\end{minipage}
+%\begin{minipage}{.47\linewidth}
+%Set CLI opts from config: \\
+%\ini{addopts = ...} \\ (use \inikey{testpaths} for paths)
+%\end{minipage}
+
+\vspace{-1.5em}
+\section{Strict mode}
+pytest 9: \ini{strict = true} enables: \vspace{-.5em}
+
+\begin{itemize}[itemsep=0pt]
+    \item \inikey{strict_config} (error on unknown options)
+    \item \inikey{strict_markers} (error on unknown markers)
+    \item \inikey{strict_parametrization_ids} \\ (error on duplicate test IDs)
+    \item \inikey{strict_xfail} (error on unexpected passes)
+\end{itemize}
+
+Older pytest versions: Set \ini{xfail_strict = true} and \ini{addopts = --strict-config --strict-markers}
+

@@ -1,0 +1,47 @@
+
+\section{Combining fixture scopes}
+
+Using two fixtures, you can combine the benefits of caching and isolation:
+
+\begin{minted}[autogobble, escapeinside=||,highlightlines={1,8}]{python}
+@pytest.fixture(scope="module")
+def rpn_instance() -> RPNCalc:
+    time.sleep(2)
+    return RPNCalc(Config())
+
+@pytest.fixture
+def rpn(rpn_instance: RPNCalc):
+    rpn_instance.stack.clear()
+    return rpn_instance
+
+def test_a(rpn: RPNCalc):
+    rpn.stack.append(42)
+    assert rpn.stack == [42]
+
+def test_b(rpn: RPNCalc):
+    assert not rpn.stack
+\end{minted}
+
+\mono{rpn_instance} uses caching and does some sort of slow operation
+(initializing database, starting external process, initializing a device, etc.),
+but it's not used directly in tests. Instead, \mono{rpn} is used, which in some
+way resets the state of the underlying object before every test.
+
+\begin{center}
+    \begin{tikzpicture}
+        \node [fixture, minimum width=3cm] (instance) {\mono{rpn_instance}};
+        \node [fixtureval, below=5mm of instance] (rpnval) {\scriptsize \phantom{\mono{rpn()}}};
+        \node [above=0.6mm of rpnval.north east, gray, xshift=0.2mm] {\scriptsize (2s)};
+        \draw [-] (instance) -- (rpnval);
+
+        \node [fixture, minimum width=2cm, below=5mm of rpnval, xshift=3em] (rpna) {\mono{rpn}};
+        \node [fixture, minimum width=2cm, below=5mm of rpnval, xshift=-3em] (rpnb) {\mono{rpn}};
+        \node [test, minimum width=2cm, below=5mm of rpna] (testa) {\mono{test_a}};
+        \node [test, minimum width=2cm, below=5mm of rpnb] (testb) {\mono{test_b}};
+        \draw [->] (rpna) -- (rpnval);
+        \draw [->] (rpnb) -- (rpnval);
+        \draw [->] (testa) -- (rpna);
+        \draw [->] (testb) -- (rpnb);
+    \end{tikzpicture}
+\end{center}
+\pagebreak

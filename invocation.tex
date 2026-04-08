@@ -1,0 +1,44 @@
+
+\linksection{usage}{Invocation}
+
+\begin{itemize}[itemsep=0mm]
+    \item \mono{pytest}
+    \item \mono{pytest path/to/tests}
+    \item \monot{pytest \highlightbox{test\_file.py}}
+    \item \monot{pytest test\_file.py\textcolor{codebluebright}{::}test\_func}
+    \item \monot{pytest test\_file.py\textcolor{codebluebright}{::}TestClass}
+    \item \monot{pytest test\_file.py\textcolor{codebluebright}{::}TestClass\textcolor{codebluebright}{::}test\_meth}
+\end{itemize}
+
+\textbf{Naming conventions:} \highlightbox{\monot{test\_\monoskip{}.py}} and \monot{\monoskip{}\_test.py},
+\monot{test\monoskip{}} functions and \monot{Test\monoskip{}} classes \\
+(also classes deriving from \py{unittest.TestCase})
+
+\linksection{cli}{CLI options}
+\newcommand{\brightslash}{\textcolor{codebluebright}{/}}
+\begin{description}[labelwidth=7em, leftmargin=!, itemsep=0mm]
+    \item[\mono{-v} \brightslash{} \mono{--verbose}] More \textcolor{codeblue}{\textsb{v}}erbose output \\ (can be given multiple times)
+    \item[\mono{-q} \brightslash{} \mono{--quiet}] More \textcolor{codeblue}{\textsb{q}}uiet output (negates \mono{-v})
+    \item[\mono{-k} \emph{\mono[codebluebright]{expression}}] Run tests whose names contain the given \textcolor{codeblue}{\textsb{k}}eyword expression (supports \mono{and}, \mono{or}, \mono{not}, and parentheses)
+          % \item[\mono{-m}\hspace{.5em}] Run tests which have a given \textcolor{codeblue}{\textbf{m}}arker
+    \item[\mono{-h} \brightslash \mono{--help}] Show full help
+\end{description}
+
+
+\section{Outcomes}
+
+\begin{tabular}{lll}
+    PASSED  & \Large\textcolor{termgreen}{\texttt{.}} & All assertions passed, no exceptions   \\[.5em]
+    FAILED  & \textcolor{termred}{\texttt{F}}         & Assertion failed or exception occurred \\
+    ERROR   & \textcolor{termred}{\texttt{E}}         & Exception occurred outside of test     \\
+            &                                         & (e.g.\ in a \emph{fixture})            \\[.5em]
+    SKIPPED & \textcolor{termyellow}{\texttt{s}}      & The test was skipped                   \\
+            &                                         & (e.g.\ via \mono{@pytest.mark.skipif}) \\
+    XFAIL   & \textcolor{termyellow}{\texttt{x}}      & An expected failure occurred           \\
+    XPASS   & \textcolor{termyellow}{\texttt{X}}      & An unexpected success occurred         \\
+            &                                         & (expected to fail but passed)
+\end{tabular}
+
+\vspace{.5em}
+pytest 9 also introduces subtests with SUBPASSED (\textcolor{termgreen}{\texttt{u}}), SUBFAILED (\textcolor{termred}{\texttt{u}}), SUBSKIPPED (\textcolor{termyellow}{\texttt{-}}) \& SUBXFAIL (\textcolor{termyellow}{\texttt{y}}).
+Only SUBFAILED is visible by default, rest needs \mono{-v}.

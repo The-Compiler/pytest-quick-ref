@@ -1,0 +1,68 @@
+
+\linksection{filterwarnings}{filterwarnings}
+Turning warning into errors, but ignoring known warnings (e.g.\ from dependencies):
+
+\begin{minted}[autogobble]{ini}
+      [pytest]
+      filterwarnings =
+          error
+    \end{minted}
+\vspace{-1em}
+\hspace{3em}$\downarrow{}$ action \hspace{3.1em} $\downarrow{}$ message regex
+\vspace{-1em}
+\begin{minted}[gobble=6]{ini}
+          ignore:ham\(\) is deprecated: \
+                DeprecationWarning:somelib
+    \end{minted}
+\vspace{-.8em}
+\hspace{5em} $\uparrow{}$ warning category \hspace{1em} $\uparrow{}$ module
+\vspace{-1em}
+
+\linksection{raises}{pytest.raises}
+
+\begin{minted}[autogobble]{python}
+    with pytest.raises(ValueError):
+        parse_percentage("abc%")
+\end{minted}
+
+Similarly, \py{pytest.warns} checks for Python warnings.
+
+Checking the exception message against a regex pattern:
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+    with pytest.raises(ValueError, |\highlightbox{match=\PYG{s}{r\PYGZdq{}\codeskip\PYGZdq{}}}|):
+        |\codeskip|
+\end{minted}
+
+% VS Code workaround
+\if 0
+    )
+    \end{minted}\fi
+
+Getting the exception info object:
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+    with pytest.raises(ValueError) |\highlightbox{\PYG{k}{as} excinfo}|:
+        parse_percentage("abc%")
+    assert str(excinfo.value) == "..."
+\end{minted}
+
+\textbf{Note:} The \py{assert} must be \textsb{outside} the \py{with} block!
+
+
+\linksection{approx}{pytest.approx}
+
+Floating point comparisons need a tolerance:
+\vspace{-.6em}
+
+\begin{minted}[autogobble, highlightlines=2]{python}
+    res = add(0.2, 0.1)
+    assert res == pytest.approx(0.3)
+\end{minted}
+\vspace{-.6em}
+
+Can override rel./abs.\ tolerance, e.g.\ 20 \textpm{} 2\textdegree: \\
+\py[escapeinside=||]{assert temperature == pytest.approx(20, abs=2)}
+default: 1e-6 relative / 1e-12 absolute
+
+Supports various data types: Sequences of numbers \\ (e.g.\ lists or tuples), dictionary values, \mono{numpy} arrays

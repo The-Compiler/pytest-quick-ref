@@ -1,0 +1,41 @@
+
+
+\linksection{fixt-override}{Fixture visibility}
+
+Fixtures defined\ldots{}
+\begin{itemize}[itemsep=0pt]
+    \item \ldots{}as methods of a test class are available only to test
+          methods on that class.
+    \item \ldots{}in a test module are available only to tests in that
+          module.
+    \item \ldots{}in a \mono{conftest.py} file are available to tests in
+          that directory and subdirectories.
+    \item \ldots{}in a plugin (or built into pytest) are available everywhere.
+\end{itemize}
+
+Fixtures in a more specific location shadow those in a more general location.
+
+\linksection{fixt-yield}{Cleanup in fixtures}
+A fixture can use \py{yield} instead of \py{return}
+to run cleanup steps after the test. Everything before the \py{yield} is setup,
+at the \py{yield} the test function runs, everything after is teardown:
+
+\begin{minted}[autogobble,highlightlines={5,8,9}]{python}
+    @pytest.fixture
+    def connected_client() -> Iterator[Client]:
+        client = Client()
+        client.connect()
+        yield client
+        client.disconnect()
+
+    def test_client(connected_client: Client):
+        print("in the test")
+\end{minted}
+
+\begin{tikzpicture}[remember picture, overlay]
+    \node [fixture, minimum height=9mm, minimum width=2cm] (fixt1o) at (6, 3.43) {\scriptsize setup};
+    \node [test, minimum height=0, minimum width=2cm, below=-.2pt of fixt1o, align=left] (callo) {\scriptsize call};
+    \node [fixture, minimum height=0, minimum width=2cm, below=-.2pt of callo, align=left] (fixt2o) {\scriptsize teardown};
+\end{tikzpicture}
+
+\pagebreak

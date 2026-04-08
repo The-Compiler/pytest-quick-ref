@@ -1,0 +1,76 @@
+\linksection{capturing}{Capturing fixtures}
+\begin{description}
+    \item[{\mono{capsys}}~] Capturing stdout/stderr in a test by overriding \py{sys.stdout},
+          e.g.\ for \py[escapeinside=||]{print(|\codeskip*|)}.
+    \item[\mono{capfd}~] \textsb{Capturing stdout/stderr in a test at file descriptor level,}
+          e.g.\ for subprocesses or libraries printing from C code. \\[.5em]
+          Type for both: \monot{pytest.CaptureFixture[\textcolor{pygkw}{str}]}
+    \item[{\parbox[t]{6.5em}{\mono{capsysbinary}/\\\mono{capfdbinary}}}]
+          \parbox[t]{6cm}{
+              Like \mono{capsys}/\mono{capfd}, \\ but for binary data. \\
+              Type: \monot{pytest.CaptureFixture[\textcolor{pygkw}{bytes}]}
+          }
+    \item[\mono{caplog}~] \textsb{Capturing logging output from a test.} \\
+          Type: \mono{pytest.LogCaptureFixture}
+\end{description}
+\vspace{-.5em}
+
+\mono{capsys} vs. \mono{capfd}: If in doubt, use \mono{capfd} to ensure everything is captured
+(built-in pytest capturing also uses \mono{fd} by default).
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+    def test_capfd(capfd):
+        subprocess.run(["ls"])
+        out, err = capfd.readouterr()
+        assert out == "..."
+\end{minted}
+
+\vspace{-.5em}
+Every process has \emph{two} outputs: \mono{stdout} and \mono[termred]{stderr}:
+\vspace{-.5em}
+
+\begin{minted}[autogobble,escapeinside=||]{text}
+    $ ls doesnotexist /home
+    |\textcolor{termred}{ls: cannot access 'doesnotexist': \codeskip}|
+    |\textcolor{codeblue}{/home:}|
+    |\textcolor{codeblue}{username}|
+\end{minted}
+
+\begin{minted}[autogobble,escapeinside=||]{text}
+    $ ls doesnotexist /home |\highlightbox{> /dev/null}|
+    |\textcolor{termred}{ls: cannot access 'doesnotexist': \codeskip}|
+\end{minted}
+\vspace{-.5em}
+
+We get them separately with \mono{capfd.readouterr()}:
+
+\begin{tabular}{l>{\columncolor{highlightcolor}}l>{\columncolor{highlightcolorred}}l}
+                                       & stdout       & \highlightbox[highlightcolorred]{stderr} \\[.75em]
+    \py{print("out 1")}                & \mono{out 1} &                                          \\
+    \py{print("out 2")}                & \mono{out 2} &                                          \\
+    \py{print("err", file=sys.stderr)} &              & \mono{err}                               \\
+\end{tabular}
+
+\vspace{-.25em}
+\hspace{.2em} \py{out, err = capfd.readouterr()}  \\[.25em]
+\hspace{1em} $\Rightarrow$ \hspace{.5em} \highlightbox{\mono{out}}: \py{"out 1\nout2\n"} \\[-.13em]
+\hspace{1em} \phantom{$\Rightarrow$} \hspace{.5em} \highlightbox[highlightcolorred]{\monot{err\vphantom{t}}}: \py{"err\n"} \\[1em]
+
+\mono{caplog} lets you access logging records. The \mono{.records} attribute provides full records which can be inconvenient (timestamps, etc.),
+convenience attributes are available:
+
+\vspace{-.5em}
+\begin{minted}[autogobble,highlightlines={3,7-10}]{python}
+def test_msgs(caplog: pytest.LogCaptureFixture):
+    logging.warning("some msg")
+    assert caplog.messages == ["some msg"]
+
+def test_tpl(caplog: pytest.LogCaptureFixture):
+    logging.warning("some msg")
+    assert caplog.record_tuples == [
+        # logger, loglevel,       message
+        ("root", logging.WARNING, "some msg"),
+    ]
+\end{minted}
+
+\pagebreak

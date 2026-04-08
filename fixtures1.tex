@@ -1,0 +1,49 @@
+
+\linksection{fixtures}{Fixtures}
+
+pytest calls the fixture function to inject a dependency into the test function (with an arg of the same name):
+\vspace{-.5em}
+
+\begin{minted}[autogobble,escapeinside=||]{python}
+    @pytest.fixture
+    def |\highlightbox[highlightcolor!80!black]{rpn}|() -> RPNCalc:
+        """RPN calculator with a default config."""
+        return RPNCalc(Config())
+
+    def test_empty_stack(|\highlightbox{rpn}|: RPNCalc):
+        assert rpn.stack == []
+\end{minted}
+
+Imagine pytest running your test like: \\[.25em]
+{\color{codeblue}\mintinline[escapeinside=||]{python}{test_empty_stack(|\highlightbox{rpn\vphantom{()}}|=|\highlightbox[highlightcolor!80!black]{rpn()}|)}}
+\vspace{.5em}
+
+Useful pytest arguments:
+\vspace{-.5em}
+
+\begin{description}[itemsep=0pt]
+    \item[\mono{--fixtures}] List all available fixtures
+    \item[\mono{--fixtures-per-test}] \strut\\ Show which fixtures are used by which tests
+    \item[\mono{--setup-show}] \strut\\ Show setup/teardown of fixtures during test
+\end{description}
+
+\linksection{conftest}{conftest.py}
+
+You can move fixture functions into \mono{conftest.py}:
+
+\begin{itemize}[itemsep=0pt]
+    \item Automatically discovered by pytest.
+    \item Visible to modules in same or sub directory.
+    \item Put hooks and cross-module used fixtures into conftest file(s) but \textbf{don't import} from them \\ (exception: classes for type annotations).
+\end{itemize}
+
+\dirtree{%
+    .1 myproject/tests/.
+    .2 export/.
+    .3 \highlightbox{conftest.py}\vspace{-1pt}.
+    .3 \highlightbox{test\_jsonexport.py}.
+    .3 \highlightbox[white]{test\_yamlexport.py}.
+    .2 \highlightbox[white]{conftest.py}.
+    .2 \highlightbox[highlightcolorred]{test\_utils.py}.
+    .2 \codeskip*.
+}
