@@ -108,3 +108,12 @@ every path/.style={bruhinblue, thick, rounded corners=2mm},
 inherits/.style={-{Triangle[open]}},
 >=latex,
 }
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+    \fancyhf{} % clear all header and footer fields
+    \fancyfoot[R]{\sffamily\footnotesize\thepage} % except the right
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}}
+\pagestyle{plain}
+\pagenumbering{gobble}
