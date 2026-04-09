@@ -125,3 +125,14 @@ inherits/.style={-{Triangle[open]}},
     \renewcommand{\footrulewidth}{0pt}}
 \pagestyle{plain}
 \pagenumbering{gobble}
+
+\newcommand{\illustrationpage}[2][]{%
+    \pagebreak
+    \thispagestyle{empty}
+    \vspace*{\fill}
+    \begin{center}
+        \includegraphics[width=\linewidth,#1]{img/illustrations/#2.png}
+    \end{center}
+    \vspace*{\fill}
+    \pagebreak
+}

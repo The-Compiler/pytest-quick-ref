@@ -8,15 +8,19 @@
 
     \input{toc}
 
+    \illustrationpage{basics}
+    \cleardoublepage
     \pagenumbering{arabic}
     \input{invocation}
+
     \input{layout}
-
     \input{api}
-    \input{skip-xfail}
 
+    \input{skip-xfail}
     \input{parametrize}
+
     \input{marking}
+    \illustrationpage{fixtures}
 
     \input{fixtures1}
     \input{fixtures2}
@@ -25,7 +29,7 @@
     \input{fixt-caching2}
 
     \input{autouse}
-    \clearpage\shipout\null  % FIXME
+    \illustrationpage{snake}
 
     \input{capturing}  % 2 pages
 
@@ -35,7 +39,7 @@
     \input{request}  % 2 pages
 
     \input{param-fixtures}
-    \clearpage\shipout\null  % FIXME
+    \illustrationpage[angle=90,height=1.75\linewidth]{debugging}
 
     \input{debugging}  % 4 pages
 
