@@ -51,91 +51,15 @@
 \DeclareOption{debug}{\let\LL@debug@info\typeout}
 \DeclareOption{twopart}{\twoparttrue}
 \DeclareOption{notwopart}{\twopartfalse}
-\newcommand*\LL@setPaperSize{}
-\DeclareOption{a3paper}{\def\LL@setPaperSize{%
-  \paperwidth=420mm\paperheight=297mm\relax}}%
-\newcommand*\LL@selectOutput{}
-\DeclareOption{frontside}{\def\LL@selectOutput#1#2{#1}}
-\DeclareOption{backside}{\def\LL@selectOutput#1#2{#2}}
-\DeclareOption{bothsides}{\def\LL@selectOutput#1#2{#1#2}}
-\newcommand*\LL@foldmark{}
-\DeclareOption{foldmark}{%
-  \def\LL@foldmark{%
-    \begingroup
-      \linethickness{\foldmarkrule}%
-      \@tempdima=\dimexpr\paperheight-\LL@tmargin
-      \put(0,\@tempdima){%
-        \line(0,-1){\foldmarklength}}%
-    \endgroup}%
-}
-\DeclareOption{nofoldmark}{\def\LL@foldmark{}}%
-\DeclareOption{foldcorr}{\foldcorrtrue}
-\DeclareOption{nofoldcorr}{\foldcorrfalse}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \PassOptionsToClass{landscape,a4paper}{article}
-\ExecuteOptions{foldmark,bothsides,landscape,notwopart}
+\ExecuteOptions{landscape,notwopart}
 \ProcessOptions\relax
 \LoadClass{article}
-\RequirePackage{graphicx}
-\newcommand*\LL@pagesize@specials[2]{}
-\@ifundefined{Gin@driver}{}{%
-  \ifx\Gin@driver\@empty\else%
-    \filename@parse{\Gin@driver}\@tempswafalse%
-    \def\reserved@a{dvips}%
-    \ifx\filename@base\reserved@a\@tempswatrue\fi%
-    \def\reserved@a{dvipdfm}%
-    \ifx\filename@base\reserved@a\@tempswatrue\fi%
-    \if@tempswa
-      \ClassInfo{leaflet}{Generating code for dvips}%
-      \def\LL@pagesize@specials#1#2{%
-        \@tempdima=#1\@tempdimb=#2 %
-        \AtBeginDvi{\special{papersize=\the\@tempdima,\the\@tempdimb}}}%
-    \fi
-    \def\reserved@a{pdftex}%
-    \ifx\filename@base\reserved@a
-      \ClassInfo{leaflet}{Generating code for pdfTeX}%
-      \def\LL@pagesize@specials#1#2{%
-        \@tempdima=#1\@tempdimb=#2 %
-        \pdfpagewidth\@tempdima\pdfpageheight\@tempdimb}%
-    \fi
-    \def\reserved@a{luatex}%
-    \ifx\filename@base\reserved@a
-      \ClassInfo{leaflet}{Generating code for LuaTeX}%
-      \ifx\pdfpagewidth\@undefined
-        \def\LL@pagesize@specials#1#2{%
-          \@tempdima=#1\@tempdimb=#2 %
-          \pagewidth\@tempdima\pageheight\@tempdimb}%
-      \else
-        \def\LL@pagesize@specials#1#2{%
-          \@tempdima=#1\@tempdimb=#2 %
-          \pdfpagewidth\@tempdima\pdfpageheight\@tempdimb}%
-      \fi
-    \fi
-    \def\reserved@a{xetex}%
-    \ifx\filename@base\reserved@a
-      \ClassInfo{leaflet}{Generating code for XeTeX}%
-      \def\LL@pagesize@specials#1#2{%
-        \@tempdima=#1\@tempdimb=#2%
-        \pdfpagewidth\@tempdima\pdfpageheight\@tempdimb}%
-    \fi
-    \def\reserved@a{vtex}%
-    \ifx\filename@base\reserved@a
-      \ClassInfo{leaflet}{Generating code for VTeX}%
-      \def\LL@pagesize@specials#1#2{%
-        \@tempdima=#1\@tempdimb=#2%
-        \mediawidth\@tempdima\mediaheight\@tempdimb}%
-    \fi
-  \fi
-}
-\newcommand*\LL@CmdIgnored[1]{%
-  \ClassWarning{leaflet}{%
-    `\string#1' ignored}}
 \setlength{\parskip}{1ex plus 2pt}
 \@listi%
 \setlength{\labelwidth}{\leftmargin}
 \addtolength{\labelwidth}{-\labelsep}
-\pagestyle{empty}
-\AddToHook{cmd/maketitle/after}{\thispagestyle{empty}}%
 \headheight\z@
 \headsep\z@
 \footskip\z@
@@ -143,8 +67,6 @@
 \marginparsep\z@
 \sloppy
 \setcounter{secnumdepth}{0}
-\renewcommand\twocolumn[1][]{\LL@CmdIgnored{\twocolumn}}
-\renewcommand\onecolumn{\LL@CmdIgnored{\onecolumn}}
 \renewcommand\topfraction{0.7}
 \renewcommand\bottomfraction{0.7}
 \setlength{\textfloatsep}{10pt plus 4pt minus 3pt}
@@ -176,18 +98,10 @@
   {-2.5ex plus -.5ex}%
   {-1em}%
   {\normalfont\normalsize\sectfont}}
-\def\part{\LL@CmdIgnored{\part}\secdef\@part\@spart}
-\def\@part[#1]#2{}
-\def\@spart#1{}
 
 \renewcommand*\descriptionlabel[1]{%
   \hspace\labelsep\normalfont\descfont #1}
 \newcommand*\descfont{\bfseries}
-\iffalse
-\g@addto@macro\enumerate{\parsep2\p@\@plus2\p@\@minus\z@}
-\g@addto@macro\itemize{\parsep2\p@\@plus2\p@\@minus\z@}
-\g@addto@macro\description{\parsep2\p@\@plus2\p@\@minus\z@}
-\else
 \newcommand*\LL@listsetup{%
   \parsep1ex\@plus.5ex\@minus.25ex%
   \LL@debug@info{***parsep=\the\parsep}%
@@ -230,49 +144,6 @@
                         \let\makelabel\descriptionlabel
                         \LL@listsetup}}
                {\endlist}
-\fi
-\newcommand*\setmargins[4]{%
-   \setlength\topmargin{#1}%
-   \edef\LL@tmargin{\the\topmargin}%
-   \setlength\evensidemargin{#2}%
-   \textheight=\dimexpr\paperheight
-     -\topmargin-\evensidemargin-\headheight-\headsep-\footskip
-   \setlength\oddsidemargin{#3}%
-   \setlength\evensidemargin{#4}%
-   \textwidth=\dimexpr\paperwidth
-     -\oddsidemargin-\evensidemargin-\marginparwidth-\marginparsep
-   \addtolength\topmargin{-1in}%
-   \addtolength\oddsidemargin{-1in}%
-   \evensidemargin\oddsidemargin
-}
-\LL@setPaperSize
-\paperwidth=0.333333334\paperwidth
-\setmargins{11mm}{11mm}{8mm}{8mm}
-\newcommand*\foldmarkrule{0.4pt}
-\newcommand*\foldmarklength{2mm}
-\providecommand*\vb@xt@{\vbox to}
-\AtBeginDocument{\AddToHook{shipout/before}{\LL@processPage}}
-\newcounter{LL@page}\setcounter{LL@page}{1}
-\newcommand\LL@tempa{}
-\newcommand*\LL@processPage{%
-  \ifnum\c@LL@page<7\relax
-    \LL@tempdima=\paperwidth
-      \setbox\ShipoutBox\vbox{%
-        \vbox{\@tempdima=1in\relax
-          \@tempdimb=\paperheight\advance\@tempdimb-\@tempdima
-          \pictur@(0,0)(\@tempdima,\@tempdimb)%
-            \begingroup
-              \set@typeset@protect
-              \@nameuse{LL@smallPic\Roman{LL@page}}%
-            \endgroup
-          \endpicture
-        }%
-        \nointerlineskip\box\ShipoutBox
-      }%
-    \fi
-  \stepcounter{LL@page}}
-
-\LL@pagesize@specials{\paperwidth}{\paperheight}%
 \endinput
 %%
 %% End of file `leaflet.cls'.
