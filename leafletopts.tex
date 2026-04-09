@@ -1,6 +1,9 @@
 % Extracted from leaflet.sty
 \makeatletter
 \setlength{\parskip}{1ex plus 2pt}
+\@listi%
+\setlength{\labelwidth}{\leftmargin}
+\addtolength{\labelwidth}{-\labelsep}
 \headheight\z@
 \headsep\z@
 \footskip\z@
@@ -18,7 +21,14 @@
 \setlength{\leftmarginiv}{1.5em}
 \setlength{\leftmarginv}{1.5em}
 \setlength{\leftmarginvi}{1.5em}
+\setlength{\labelsep}{.5em}
+\setlength  \labelwidth{\leftmargini}
+\addtolength\labelwidth{-\labelsep}
 \def\noparskip{\par\vspace{-\parskip}}
+\let\old@small\small
+\renewcommand{\small}{\old@small\let\@listi\@listI}
+\let\old@footnotesize\footnotesize
+\renewcommand{\footnotesize}{\old@footnotesize\let\@listi\@listI}
 \newcommand{\sectfont}{\bfseries}
 \renewcommand\section{\@startsection{section}{1}{\z@}%
   {-3.5ex \@plus -.75ex}%
@@ -32,5 +42,47 @@
   {-2.5ex plus -.5ex}%
   {-1em}%
   {\normalfont\normalsize\sectfont}}
+
+\renewcommand*\descriptionlabel[1]{%
+  \hspace\labelsep\normalfont\descfont #1}
+\newcommand*\descfont{\bfseries}
+\newcommand*\LL@listsetup{%
+  \parsep1ex\@plus.5ex\@minus.25ex%
+  \itemsep\z@
+  \topsep\z@
+}
+\def\enumerate{%
+  \ifnum \@enumdepth >\thr@@\@toodeep\else
+    \advance\@enumdepth\@ne
+    \edef\@enumctr{enum\romannumeral\the\@enumdepth}%
+    \expandafter
+    \list
+      \csname label\@enumctr\endcsname
+      {\usecounter\@enumctr
+        \def\makelabel##1{\hss\llap{##1}}%
+        %\def\makelabel##1{##1\hfill}%
+        %\def\makelabel##1{\hss##1}%
+        \LL@listsetup
+      }%
+  \fi}
+\def\itemize{%
+  \ifnum \@itemdepth >\thr@@\@toodeep\else
+    \advance\@itemdepth\@ne
+    \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
+    \expandafter
+    \list
+      \csname\@itemitem\endcsname
+      {%
+        \def\makelabel##1{\hss\llap{##1}}%
+        %\def\makelabel##1{##1\hfill}%
+        %\def\makelabel##1{\hss##1}%
+        \LL@listsetup
+      }%
+  \fi}
+\renewenvironment{description}
+               {\list{}{\labelwidth\z@ \itemindent-\leftmargin
+                        \let\makelabel\descriptionlabel
+                        \LL@listsetup}}
+               {\endlist}
 
 \makeatother
