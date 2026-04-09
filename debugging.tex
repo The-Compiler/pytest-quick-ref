@@ -1,0 +1,213 @@
+%\section{Debugging failing tests}  % FIXME
+
+\linksection{output}{Args to control output}
+\begin{tabular}{rrl}
+              & \mono{--tb}                                                                                            & Control traceback generation  \\
+              & \multicolumn{2}{l}{\mono{auto} / \mono{long} / \mono{short} / \mono{line} / \mono{native} / \mono{no}}                                 \\
+    \mono{-l} & \mono{--showlocals}                                                                                    & Show locals in tracebacks     \\
+    \mono{-s} & \mono{--capture=no}                                                                                    & Disable output capturing      \\
+    \mono{-q} & \mono{--quiet}                                                                                         & Decrease verbosity            \\
+    \mono{-v} & \mono{--verbose}                                                                                       & Increase verbosity            \\
+              &                                                                                                        & (can be given multiple times) \\
+\end{tabular}
+\vspace{1em}
+
+\monot{\$ pytest \highlightbox{--tb=short} basic/test\_traceback.py} \\
+\codeskip \\
+\mono[termred]{______________ test_divide ______________} \\
+\mono[termred]{basic/test_traceback.py}\monot[black]{:5:\ in test\_divide} \\
+\py[escapeinside=||]{|\codeindent{4}|assert calc(2, 0, "/") == 0} \\
+\mono[termred]{rpncalc/utils.py}\monot[black]{:14:\ in calc} \\
+\py[escapeinside=||]{|\codeindent{4}|return a / b} \\
+\monot[termred]{E \ \ ZeroDivisionError:\ division by zero}
+
+\linksection{mathspp-select}{Args to select tests}
+\newcommand*{\drawex}[1]{%
+    \begin{tikzpicture}[
+            base/.style={test, minimum height=5mm},
+            good/.style={base, draw=green!80!black, fill=green!20, text=green!40!black},
+            bad/.style={base, draw=red!60, fill=highlightcolorred, text=red!40!black},
+            new/.style={base},
+        ]
+
+        \def\previousnode{}
+
+        \foreach \name/\style [count=\i from 0] in {#1} {
+                \ifx\previousnode\empty
+                    \node[\style] (node\i) {\texttt{\name}};
+                \else
+                    \node[\style, right=4mm of \previousnode] (node\i) {\texttt{\name}};
+                    \draw[-, draw=gray] (\previousnode) -- (node\i);
+                \fi
+
+                \xdef\previousnode{node\i}
+            }
+    \end{tikzpicture}
+}
+\newcommand{\runsep}{{\Large,}\hspace{.6em}}
+
+\raisebox{.75ex}{after} \hspace{.25em} \drawex{1/good, 2/bad, 3/good, 4/bad, 5/good} \\[.5em]
+\raisebox{.7ex}{pass:} \drawex{\phantom{1}/good} \hspace{1em} \raisebox{.7ex}{fail:} \drawex{\phantom{1}/bad} \hspace{1em} \raisebox{.7ex}{new:} \drawex{\phantom{1}/new} \\[.5em]
+
+\begin{tabular}{rrl}
+    \mono{--lf} & \mono{--last-failed}                             & Run last-failed only                                                                                                  \\[.1em]
+    \multicolumn{3}{l}{\drawex{2/bad, 4/bad}}                                                                                                                                              \\[.4em]
+    \mono{--ff} & \mono{--failed-first}                            & Run last-failed first                                                                                                 \\[.1em]
+    \multicolumn{3}{l}{\drawex{2/bad, 4/bad, 1/good, 3/good, 5/good}}                                                                                                                      \\[.4em]
+    \mono{--nf} & \mono{--new-first}                               & Run new tests first                                                                                                   \\[.1em]
+    \multicolumn{3}{l}{\drawex{6/new, 1/good, 2/bad, 3/good, 4/bad, 5/good}}                                                                                                               \\[.8em]
+    \mono{-x}   & \mono{--maxfail=}\textcolor{codebluebright}{$n$} & Exit on first / $n$-th failure                                                                                        \\[.1em]
+    \multicolumn{3}{l}{\drawex{1/good, 2/bad}}                                                                                                                                             \\[.4em]
+    \mono{--sw} & \mono{--stepwise}                                & Look at failures step by step                                                                                         \\[.1em]
+    \multicolumn{3}{l}{\drawex{1/good, 2/bad}\runsep{}\drawex{2/bad}\runsep{}\drawex{2/bad}\runsep{}\drawex{2/good, 3/good, 4/bad}\runsep{}\drawex{4/bad}\runsep{}\drawex{4/good, 5/good}} \\
+\end{tabular}
+
+\section{Tracing fixture execution}
+\begin{description}
+    \item[\mono{--setup-show}] Show fixtures as they are set up, used and torn down.
+    \item[\mono{--setup-only}] Only setup fixtures, do not execute tests.
+    \item[\mono{--setup-plan}] Show what fixtures/tests would be executed, but don't run.
+\end{description}
+
+Reminder: \mono{--fixtures} and \mono{--fixtures-per-test} can be useful as well.
+\vspace{.5em}
+
+\textbf{Output:}
+
+\begin{minted}[autogobble,escapeinside=||]{text}
+    test_f.py 
+      |\highlightbox{SETUP    F fixt}|
+      test_f.py::test_fixt |\highlightbox{(fixtures used: fixt)}\textcolor{termgreen}{.}|
+      |\highlightbox{TEARDOWN F fixt}|
+  \end{minted}
+
+\textsb{F}: function scope, there is also \textsb{C}lass, \textsb{M}odule, \textsb{P}ackage, and \textsb{S}ession.
+
+\section{Adding information to an assert}
+Using a comma after \py[escapeinside=||]{assert |\codeskip|}, additional information can be printed:
+
+\begin{minted}[autogobble, escapeinside=||]{python}
+    def test_add(rpn: RPNCalculator):
+        rpn.evaluate("2")
+        rpn.evaluate("3")
+        rpn.evaluate("1")
+        rpn.evaluate("+")
+        assert rpn.stack[-1] == 6|\highlightbox{, rpn.stack}|
+\end{minted}
+
+Output:
+
+\begin{minted}[autogobble, escapeinside=||]{text}
+    |\textcolor{termred}{E    AssertionError: \highlightbox{[2.0, 4.0]}}|
+    |\textcolor{termred}{E    assert 4.0 == 6}|
+\end{minted}
+
+\linksection{pdb}{The pdb debugger}
+pdb is a command-line debugger for Python. \\
+Trigger it with \mono{--pdb} or \mono{--trace} in pytest, \\
+or \py{breakpoint()} in your code.
+
+At the \mono{(pdb)} prompt, you can use:
+
+\begin{description}[labelwidth=7.5em, itemsep=0pt]
+    \item[\mono{bt} \brightslash{} \mono{w} \brightslash{} \mono{where}] Print the traceback
+    \item[\mono{l} \brightslash{} \mono{list}] Show the current source code
+    \item[\mono{h} \brightslash{} \mono{help}] Show help
+    \item[\mono{p} \brightslash{} \mono{pp}] (Pretty) print a variable
+    \item[\mono{c} \brightslash{} \mono{continue}] Continue to next breakpoint
+    \item[\mono{d} \brightslash{} \mono{down}\textcolor{codebluebright}{,} \mono{u} \brightslash{} \mono{up}] Move up/down the stack
+    \item[\mono{interact}] Open Python shell
+\end{description}
+
+\section{Showing slow test durations}
+Running e.g.\ \mono{pytest --durations=20} shows slow tests:
+
+\begin{minted}[autogobble,escapeinside=||]{text}
+        |\highlightbox{2.00s}| setup    test_fixture_1.py::test_a
+        |\highlightbox{2.00s}| setup    test_fixture_2.py::test_b
+        |\highlightbox{2.00s}| setup    test_fixture_2.py::test_a
+        |\highlightbox{1.00s}| call     test_marking.py::test_slow_api
+        |\highlightbox{0.27s}| call     test_real.py::test_convert
+        |\codeskip|
+    \end{minted}
+
+\qrcode[height=1.25cm]{https://www.symerio.com/blog/profiling-python}
+\hspace{1em}
+\begin{minipage}{.8\linewidth}
+    For more fine-grained performance analysis, use a profiler such as Python's \mono{cProfile}. \\
+    See e.g. Symerio: \enquote{Profiling Python code to optimize run time}.
+\end{minipage}
+
+\linksection{faulthandler}{Hanging tests}
+\begin{minipage}{.45\linewidth}
+    \begin{minted}[autogobble]{python}
+    def hang():
+        time.sleep(10)
+\end{minted}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+    \begin{minted}[autogobble]{python}
+    def test_hang():
+        hang()
+\end{minted}
+\end{minipage}
+\vspace{.5em}
+
+pytest can print the traceback after a given timeout via the \inikey{faulthandler_timeout} config option:
+\pagebreak
+
+\begin{minted}[autogobble,escapeinside=||]{text}
+    |\textcolor{codeblue}{\$ pytest -o \highlightbox{faulthandler\_timeout=5} -v}|
+    |\codeskip|
+    test_hang.py::test_hang |\highlightbox{Timeout (0:00:05)!}|
+    Thread 0x|\codeskip*| (most recent call first):
+    File "|\codeskip*|/test_hang.py", line 3 in hang
+    File "|\codeskip*|/test_hang.py", line 6 in test_hang
+    |\codeskip|
+    |\textcolor{termgreen}{============ \textcolor{termgreen}{\textbf{1 passed}}\textcolor{termgreen}{\ in 10.08s}\textcolor{termgreen}{} ============}|
+\end{minted}
+
+pytest 9 adds a \inikey{faulthandler_exit_on_timeout} option to quit pytest on timeout. The \mono{pytest-timeout} plugin can interrupt and fail timing out tests:
+
+\begin{minted}[escapeinside=||,autogobble]{text}
+    |\textcolor{codeblue}{\$ pytest \highlightbox{--timeout=5} -v test\_hang.py}|
+    |\codeskip|
+    test_hang.py::test_hang |\textcolor{termred}{FAILED}|
+    |\codeskip|
+\end{minted}
+\vspace{-2em}
+\begin{minted}[autogobble]{python}
+        def hang():
+    >       time.sleep(10)
+\end{minted}
+\vspace{-2em}
+\begin{minted}[escapeinside=||,autogobble]{text}
+    |\textbf{\textcolor{termred}{E       Failed: Timeout >5.0s}}|
+    |\codeskip|
+\end{minted}
+
+\vspace{-2em}
+
+\linksection{flaky}{Flaky tests}
+The \mono{pytest-rerunfailures} plugin reruns flaky tests:
+
+\begin{minted}[autogobble,highlightlines=4]{python}
+    @pytest.mark.flaky
+    def test_maybe_fail():
+        assert random.randint(1, 2) == 2
+\end{minted}
+
+\begin{minted}[escapeinside=||,autogobble]{text}
+                    |\textcolor{codeblue}{\$ pytest -v test\_flaky.py}|
+                    |\codeskip|
+                    test_flaky.py::test_maybe_fail |\textcolor{termyellow}{\highlightbox{RERUN}}|
+                    test_flaky.py::test_maybe_fail |\textcolor{termgreen}{\highlightbox[white]{PASSED}}|
+
+                    |\textcolor{termyellow}{======== \textcolor{termgreen}{\textbf{1 passed}}, \highlightbox{\textcolor{termyellow}{\textbf{1 rerun}}}\textcolor{termyellow}{ in \codeskip*}\textcolor{termyellow}{} ========}|
+                \end{minted}
+
+This \textbf{should be a last resort}, but probably is still better than skipping the test or using (non-strict) xfail.
+If you can, fix the flakiness instead!
+
+There are services to track test results over time to spot flaky tests, e.g.:
+Codecov Test Analytics, flakytest.dev or BuildPulse.

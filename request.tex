@@ -1,0 +1,122 @@
+\linksection{request}{The request fixture}
+Fixture functions can receive a \mono{request} object with attributes:
+
+\begin{minted}[highlightlines=9-10,autogobble,escapeinside=||]{python}
+    @pytest.fixture
+    def myfix(request: pytest.FixtureRequest):
+        request.function  # test function/method
+        request.cls       # class of test
+        request.instance  # class instance
+        request.module    # module of test
+
+        request.path      # path object of module
+        request.node      # collection node
+        request.config    # pytest config object
+
+    def test_myfix(myfix):
+        |\codeskip|
+  \end{minted}
+
+\vspace{-.5em}
+\subsection{Getting fixtures dynamically}
+
+With \py[escapeinside=||]{request.getfixturevalue(|\codeskip*|)}, we can get a fixture dynamically, to parametrize a test with fixtures:
+
+\begin{minted}[autogobble]{python}
+    @pytest.fixture
+    def default_config():
+        return Config("default.json")
+\end{minted}
+\begin{minted}[autogobble]{python}
+    @pytest.fixture
+    def debug_config():
+        return Config("debug.json")
+\end{minted}
+
+\begin{minted}[escapeinside=||,autogobble]{python}
+    @pytest.mark.parametrize("confname", [
+        "default_config", "debug_config"])
+    def test_configs(request, confname):
+        config = |\highlightbox{request.getfixturevalue}|(confname)
+        |\codeskip|
+\end{minted}
+
+Alternatives and (much!) more discussion:
+
+\begin{itemize}
+    \item pytest issue 349: \\ Using fixtures in \mono{pytest.mark.parametrize}
+    \item The \mono{pytest-cases} plugin for more sophisticated parametrization
+\end{itemize}
+%\qrcode[height=4em]{https://github.com/pytest-dev/pytest/issues/349}
+
+%\begin{tikzpicture}
+%    \node [fixture, minimum width=2.5cm] (request) {\mono{request}};
+%    \node [fixture, below=0.5 of request, minimum width=2.5cm] (myfix) {\mono{myfix}};
+%    \node [test, below=0.75 of myfix, minimum width=2.5cm] (test) {\mono{test_myfix}};
+%
+%    \draw [->] (test) -- (myfix);
+%    \draw [->] (myfix) -- (request);
+%    \draw [-{to}, gray, rounded corners, label=right:foo]
+%    (request.east) -- ([xshift=5mm]request.east) -- ([xshift=5mm]test.east) -- (test.east);
+%\end{tikzpicture}
+
+\subsection{Accessing markers}
+
+Via \py[escapeinside=||]{request.node.get_closest_marker(|\codeskip*|)}, you can get markers from test nodes.
+As with e.g.\ \py[escapeinside=||]{@pytest.mark.parametrize(|\codeskip*|)},
+you can pass
+arguments to markers, and access them in your fixture:
+
+\begin{minted}[escapeinside=||,autogobble]{python}
+@pytest.fixture
+def config(request: pytest.FixtureRequest):
+    marker = request.node.get_closest_markerr
+        "config_args")
+    if marker is None:
+        return Config()
+    return Config(*marker.args, **marker.kwargs)
+\end{minted}
+
+The returned \mono{Mark} object has \mono{args} and \mono{kwargs} attributes with
+the arguments passed to the marker. With
+
+\begin{minted}[autogobble]{python}
+@pytest.mark.config_args(
+    "production.json", strict=True)
+\end{minted}
+
+you'll get: \hspace{6em}\raisebox{-.2em}{\textcolor{gray}{(single-element tuple)}}
+\vspace{-.2em}
+
+\begin{tabular}{lll}
+    \py{marker.args}   & \textrightarrow{} & \py{("production.json",)} \\
+    \py{marker.kwargs} & \textrightarrow{} & \py{{"strict": True}}
+\end{tabular}
+
+\subsection{Custom CLI flags}
+Using a plugin hook, you can also customize fixture behavior based on custom CLI flags:
+
+\begin{minted}[autogobble]{python}
+    def pytest_addoption(parser: pytest.Parser):
+        parser.addoption("--server-ip", type=str)
+
+    @pytest.fixture
+    def server_ip(request: pytest.FixtureRequest):
+        return request.config.option.server_ip
+\end{minted}
+% \vspace{1em}
+
+% \ex{}
+
+% \begin{itemize}
+%     \item Use this \mono{conftest.py}: In \mono{fixtures/cli_opt/}, create a \mono{test_server_ip.py} with a test using the \mono{server_ip} fixture
+%     \item Invoke with different \mono{--server-ip} option values
+% \end{itemize}
+
+\vspace{.5em}
+\filenameheadert{\$ pytest --help}
+\begin{minted}[escapeinside=||,autogobble]{text}
+    |\codeskip|
+    Custom options:
+        |\highlightbox{--server-ip=SERVER\_IP}|
+\end{minted}

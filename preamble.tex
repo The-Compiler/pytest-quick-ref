@@ -12,6 +12,7 @@
 \usepackage{enumitem}
 \usepackage{csquotes}
 \usepackage{colortbl}
+\usepackage{multirow}
 \usepackage{dirtree}
 %           offset  width sep   rulewidth  dot-size
 \DTsetlength{0.25em}{1em}{0.2em}{0.3pt}{0pt}
@@ -20,6 +21,7 @@
 \definecolor{bruhinblue}{rgb}{0.11,0.21,0.37}
 \colorlet{orangebg}{orange!20}
 \colorlet{codebluebright}{codeblue!50}
+\colorlet{codebluebg}{codeblue!10}
 \colorlet{highlightcolor}{cyan!20}
 \colorlet{highlightcolorred}{red!20}
 \colorlet{highlightcolorold}{highlightcolor!80!gray}
@@ -94,14 +96,14 @@
 \usepackage{tikz}
 \usetikzlibrary{intersections,positioning,backgrounds,fit,arrows,arrows.meta,shapes.symbols,shapes.misc}
 \tikzset{
-    pynode/.style={rectangle, thick, minimum height=8mm},
-    bluenode/.style={pynode, draw=codeblue, text=codeblue, fill=codebluebg},
-    bluenodebright/.style={pynode, draw=codebluebright, text=codebluebright, fill=codebluebg!50},
-    marker/.style={draw=violet!60, fill=violet!5, rounded corners=2.5mm, text=violet, font=\small},
-    fixture/.style={pynode, draw=cyan!60, fill=cyan!5, rounded corners=0mm},
-    fixtureval/.style={thick, circle, draw=red!60, fill=red!5, rounded corners=0mm},
-    test/.style={pynode, draw=bruhinblue!60, fill=bruhinblue!5},
-    every path/.style={bruhinblue, thick, rounded corners=2mm},
-    inherits/.style={-{Triangle[open]}},
-    >=latex,
+pynode/.style={rectangle, thick, minimum height=8mm},
+bluenode/.style={pynode, draw=codeblue, text=codeblue, fill=codebluebg},
+bluenodebright/.style={pynode, draw=codebluebright, text=codebluebright, fill=codebluebg!50},
+marker/.style={draw=violet!60, fill=violet!5, rounded corners=2.5mm, text=violet, font=\small},
+fixture/.style={pynode, draw=cyan!60, fill=cyan!5, rounded corners=0mm},
+fixtureval/.style={thick, circle, draw=red!60, fill=red!5, rounded corners=0mm},
+test/.style={pynode, draw=bruhinblue!60, fill=bruhinblue!5},
+every path/.style={bruhinblue, thick, rounded corners=2mm},
+inherits/.style={-{Triangle[open]}},
+>=latex,
 }

@@ -1,0 +1,75 @@
+\linksection{autouse}{Autouse Fixtures}
+
+If you want to prepare the environment for all tests implicitly, use \py{autouse=True}.
+This runs the fixture for all tests for which it is visible (e.g. in the same module or the same class, depending on definition location):
+
+\begin{minted}[autogobble,highlightlines=1]{python}
+    @pytest.fixture(autouse=True)
+    def tmp_homedir(tmp_path, monkeypatch):
+        monkeypatch.setenv("HOME", str(tmp_path))
+        return tmp_path
+
+    def test_a(tmp_homedir):
+        assert not list(tmp_homedir.iterdir())
+
+    def test_b():
+        home = pathlib.Path.home()
+        assert not list(home.iterdir())
+\end{minted}
+
+\begin{minipage}[t]{.49\linewidth}
+    \textbf{autouse:} \vspace{.5em}
+
+    \begin{tikzpicture}
+        \node [fixture, align=center] (tmphomedir) {\mono{tmp_homedir}};
+        \node [fixtureval, below=2mm of tmphomedir, xshift=-8mm] (fixtureval) {};
+        \node [test, below=0.3 of fixtureval] (test1) {\mono{test_a}};
+        \node [test, right=0.3 of test1] (test2) {\mono{test_b}};
+
+        \draw [-] (fixtureval) -- (fixtureval |- tmphomedir.south);
+
+        \draw [->] (test1) -- (fixtureval.south);
+        \draw [->, dashed, gray] (test2) -- (test2 |- tmphomedir.south);
+
+        \node [above=0 of test2.north west, gray, xshift=0.5mm] {\scriptsize (autouse)};
+        \path (test1.south) -- (test2.south) coordinate[midway] (mid);
+
+        \begin{scope}[on background layer]
+            \node[fit=(tmphomedir)(test1)(test2), fill=orangebg, rounded corners] {};
+        \end{scope}
+    \end{tikzpicture}
+\end{minipage}
+\begin{minipage}[t]{.49\linewidth}
+    \textbf{usefixtures:} \vspace{.5em}
+
+    \begin{tikzpicture}
+        \node [fixture, align=center] (tmphomedir) {\mono{tmp_homedir}};
+        \node [test, below=1.6 of tmphomedir] (test) {\mono{test_empty}};
+
+        \draw [->, dashed, gray] (test.east) -- ([xshift=1.25cm]test.east) |- (tmphomedir.east);
+
+        \node [above=1mm of test] (testclass) {\py{class TestHomeDir}};
+
+        \begin{scope}[on background layer]
+            \node[fit=(test)(testclass), fill=orangebg, rounded corners, minimum width=4cm] (rect) {};
+        \end{scope}
+
+        \node [marker, above=0 of rect.north west, anchor=south west] (marker) {usefixtures: \mono{tmp_homedir}};
+    \end{tikzpicture}
+\end{minipage}
+
+\linksection{usefixtures}{usefixtures marker}
+Using fixtures without specifying them as function args:
+
+\begin{minted}[autogobble, highlightlines=6]{python}
+    @pytest.fixture
+    def tmp_homedir(tmp_path, monkeypatch):
+        monkeypatch.setenv("HOME", str(tmp_path))
+        return tmp_path
+
+    @pytest.mark.usefixtures("tmp_homedir")
+    class TestHomeDir:
+        def test_empty(self):
+            home = pathlib.Path.home()
+            assert not list(home.iterdir())
+\end{minted}

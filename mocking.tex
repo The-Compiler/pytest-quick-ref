@@ -1,0 +1,130 @@
+\linksection{unittest-mock}{unittest.mock}
+
+The \mono{pytest-mock} plugin exposes \mono{unittest.mock} features via a \mono{mocker} fixture.
+\mono{Mock} objects are \enquote{magic} objects that can pretend to be anything.
+\vspace{-.5em}
+
+\begin{minted}[autogobble]{python}
+    >>> dev = Mock(name="dev")
+\end{minted}
+\vspace{-.5em}
+
+On a \mono{Mock} object, we can access any attributes, call the mock, etc.
+We always get another \mono{Mock} back:
+\vspace{-.25em}
+
+\begin{minted}[autogobble]{python}
+    >>> dev.conn
+    <Mock name='dev.conn' id='X'>
+\end{minted}
+\vspace{-1.5em}
+
+\begin{minted}[autogobble]{python}
+    >>> dev.conn.send("cmd")
+    <Mock name='dev.conn.send()' id='...4736'>
+\end{minted}
+\vspace{-.25em}
+
+\newenvironment{mocktable}{
+    \begin{tabular}{>{\color{bruhinblue}}l>{\ttfamily}l}
+        }{%
+    \end{tabular}
+}
+
+\vspace{1em}
+\begin{center}
+    \begin{tikzpicture}[
+            mock/.style={
+                    bluenodebright,
+                    align=left,
+                    label={[label distance=.5em]left:\mono{Mock}},
+                    minimum width=5.5cm,
+                    text width=5cm,
+                },
+        ]
+        \node [mock] (dev) {
+            \begin{mocktable}
+                name & dev             \\
+                id   & \codeskip{}1376 \\
+            \end{mocktable}
+        };
+
+        \node [mock, below=8mm of dev, bluenode] (conn) {
+            \begin{mocktable}
+                name & dev.conn \\
+                id   & \emph{X} \\
+            \end{mocktable}
+        };
+        \draw [->] (dev) -- (conn) node[midway, right] {\mono{.conn}};
+
+        \node [mock, below=8mm of conn] (send) {
+            \begin{mocktable}
+                name & dev.conn.send   \\
+                id   & \codeskip{}3056 \\
+            \end{mocktable}
+        };
+        \draw [->] (conn) -- (send) node[midway, right] {\monot{\codeskip.send}};
+
+        \node [mock, below=8mm of send] (call) {
+            \begin{mocktable}
+                name & dev.conn.send() \\
+                id   & \codeskip{}4736 \\
+            \end{mocktable}
+        };
+        \draw [->] (send) -- (call) node[midway, right] {\monot{\codeskip()}};
+    \end{tikzpicture}
+\end{center}
+\vspace{1em}
+
+Doing the same thing again results in the same mock (same \mono{id}):
+\vspace{-.25em}
+
+\begin{minted}[autogobble]{python}
+    >>> dev.conn
+    <Mock name='dev.conn' id='X'>
+\end{minted}
+\pagebreak
+
+We can set special attributes to \emph{configure} the mock's behavior:
+
+\begin{minted}[autogobble,escapeinside=||,beameroverlays]{python}
+    >>> dev.conn.|\highlightbox[white]{send}|.return_value = "ok"
+    >>> dev.conn.|\highlightbox{send(\PYG{s}{\PYGZdq{}cmd\PYGZdq{}})}|
+    'ok'
+\end{minted}
+
+Then we run the tests, which use the mock like a real object. The mock remembers what happened, so we can assert on that:
+
+\begin{minted}[autogobble,escapeinside=||,beameroverlays]{python}
+    >>> dev.conn.|\highlightbox{send.assert\_called\_with(\PYG{s}{\PYGZdq{}cmd\PYGZdq{}})}|
+\end{minted}
+
+\vspace{-.5em}
+\begin{minted}[autogobble,escapeinside=||]{python}
+    >>> dev.conn.|\highlightbox[highlightcolorred]{send.assert\_called\_with(\PYG{s}{\PYGZdq{}no\PYGZdq{}})}|
+    |\codeskip|
+    AssertionError: |expected call not found.|
+    Expected: |\highlightbox[highlightcolorred]{send(\PYG{s}{\PYGZsq{}no\PYGZsq{}})}|
+    Actual:   |\highlightbox{send(\PYG{s}{\PYGZsq{}cmd\PYGZsq{}})}|
+\end{minted}
+
+\section{Mocking libraries}
+
+Sometimes there are ready-made mocking libraries, so there is no need to hand-roll mocks:
+
+\begin{description}[labelwidth=9em, leftmargin=!, itemsep=0pt]
+    \item[requests] \textbf{responses}, betamax, \\ requests-mock
+    \item[aiohttp] aioresponses
+    \item[HTTP in general] \textbf{VCR.py}, HTTPretty, pook
+    \item[sockets in general] mocket
+    \item[time/datetime] freezegun, time-machine
+\end{description}
+
+For most of those, there's a corresponding pytest plugin for nice integration.
+
+\textbf{Result:} More high-level abstraction for mocking \\
+(e.g.\ HTTP responses instead of the Python API).
+
+Well-tested mocks, usually covering the entire API of a library.
+
+Not many high-level mocking libraries exist. \\ But if one does, \textbf{use it}!

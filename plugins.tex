@@ -1,0 +1,392 @@
+\linksection{writing-plugins}{Writing plugins}
+Plugins come in two flavours:
+
+\begin{itemize}
+    \item Local plugins: \mono{conftest.py} files
+    \item Installable plugins via packaging entry points
+\end{itemize}
+
+\vspace{.5em}
+
+They can contain fixtures and hook implementations for:
+\vspace{.25em}
+
+\begin{minipage}{.5\linewidth}
+    \begin{itemize}
+        \item configuration
+        \item collection
+        \item test running
+        \item reporting
+    \end{itemize}
+\end{minipage}
+\begin{minipage}{.4\linewidth}
+    \includegraphics[width=7em]{img/illustrations/writingplugins.png}
+\end{minipage}
+\vspace{1em}
+
+A hook is auto-discovered by its \mono{pytest_}\textcolor{codeblue}{$\cdots{}$} name.
+\vspace{1em}
+
+The arg names \textbf{must} match the precise signature names:
+\vspace{-1em}
+
+\begin{minted}[escapeinside=||, autogobble]{python}
+    def pytest_configure(|\highlightbox{config}|):
+        |\codeskip|
+\end{minted}
+\vspace{-.25em}
+
+\begin{minipage}{.7\linewidth}
+    You can accept fewer parameters:
+
+    \begin{minted}[escapeinside=||, autogobble]{python}
+    def pytest_configure():
+        |\codeskip|
+\end{minted}
+    \vspace{-.25em}
+
+    mismatch:
+
+    \begin{minted}[escapeinside=||, autogobble]{python}
+    def pytest_configure(|\highlightbox[highlightcolorred]{cfg}|):
+        |\codeskip|
+\end{minted}
+\end{minipage}
+\begin{minipage}{.29\linewidth}
+    \includegraphics[width=5em]{img/illustrations/hooks.png}
+\end{minipage}
+\vspace{1em}
+
+As with fixtures, imagine pytest calling your function with keyword arguments:
+
+\begin{minted}[escapeinside=||, autogobble]{python}
+        pytest_configure(|\highlightbox{config=}pytest.Config(\codeskip*)|)
+    \end{minted}
+
+% VS Code workaround
+\if 0
+    )
+    \end{minted}\fi
+
+\pagebreak
+\linksection{hooks-ref}{Hooks reference}
+\dirtree{%
+    .1 \mono{main()}.
+    .2 \textnormal{Import and register built-in plugins:} \\ \mono{pytest_plugin_registered}.
+    .2 \mono{pytest_addoption}.
+    .2 \mono{pytest_cmdline_parse}.
+    .2 \mono{pytest_cmdline_main}.
+    .3 \mono{pytest_configure}.
+    .3 \mono{pytest_sessionstart}.
+    .4 \mono{pytest_report_header}.
+    .3 \mono{pytest_collection}.
+    .4 \codeskip*.
+    .3 \mono{pytest_runtestloop}.
+    .4 \codeskip*.
+    .3 \mono{pytest_sessionfinish}.
+    .4 \mono{pytest_terminal_summary}.
+    .3 \mono{pytest_unconfigure}.
+}
+
+\begin{center}
+    \begin{tikzpicture}[stepnode/.style={bluenode, minimum width=4cm}, baseline={(0, 1)}]
+        \node [stepnode] (bootstrap) {Bootstrapping};
+        \node [stepnode, below=1cm of bootstrap] (init) {Initialization};
+        \node [stepnode, below=1cm of init] (collect) {Collection};
+        \node [stepnode, below=1cm of collect, align=center] (run) {Running / Reporting};
+        \node [stepnode, below=1cm of run] (finish) {Finishing};
+
+        \draw [-, dotted, draw=codeblue] (bootstrap) -- (init);
+        \draw [-, dotted, draw=codeblue] (init) -- (collect);
+        \draw [-, dotted, draw=codeblue] (collect) -- (run);
+        \draw [-, dotted, draw=codeblue] (run) -- (finish);
+    \end{tikzpicture}
+\end{center}
+\pagebreak
+
+\subsection{Collection: Collecting files}
+
+\dirtree{%
+    .1 \mono{pytest_collection}.
+    .2 \mono{pytest_collectstart}.
+    .2 \mono{pytest_make_collect_report}.
+    .3 \mono{pytest_ignore_collect}.
+    .3 \mono{pytest_collect_file}.
+    .4 \mono{pytest_pycollect_makemodule}.
+    .3 \mono{pytest_ignore_collect}.
+    .3 \highlightbox{\mono{pytest_collect_file}}.
+    .4 \mono{pytest_pycollect_makemodule}.
+    .3 \textnormal{(repeat)}.
+    .2 \mono{pytest_itemcollected}.
+    .2 \textnormal{(repeat)}.
+    .2 \mono{pytest_collectreport}.
+    .2 \codeskip*.
+}
+\vspace{2em}
+
+\begin{minipage}{.52\linewidth}
+    \begin{tikzpicture}[stepnode/.style={bluenode, minimum width=3.5cm}]
+        \node [stepnode] (bootstrap) {Bootstrapping};
+        \node [stepnode, below=1cm of bootstrap] (init) {Initialization};
+        \node [stepnode, below=1cm of init, fill=highlightcolor] (collect) {Collection};
+        \node [stepnode, below=1cm of collect, align=center] (run) {Running / Reporting};
+        \node [stepnode, below=1cm of run] (finish) {Finishing};
+
+        \draw [-, dotted, draw=codeblue] (bootstrap) -- (init);
+        \draw [-, dotted, draw=codeblue] (init) -- (collect);
+        \draw [-, dotted, draw=codeblue] (collect) -- (run);
+        \draw [-, dotted, draw=codeblue] (run) -- (finish);
+    \end{tikzpicture}
+\end{minipage}
+\begin{minipage}{.47\linewidth}
+    pytest builds up a \\ collection tree: \\[.25em]
+
+    \textcolor{gray}{{(\texttt{Dir} nodes introduced in pytest 8)}}
+    \vspace{1em}
+
+    \begin{tikzpicture}[itemnode/.style={bluenode, align=center}]
+        \node [itemnode, minimum width=2.5cm] (collector) {Collector};
+        \node [itemnode, minimum width=2.5cm, draw=codebluebright, text=codebluebright, below=5mm of collector] (dir1) {Dir \\ \texttt{myproject}};
+        \node [itemnode, minimum width=2.5cm, draw=codebluebright, text=codebluebright, below=5mm of dir1] (dir2) {Dir \\ \texttt{tests}};
+        \node [itemnode, below=of dir2, xshift=-1.15cm] (mod1) {Module \\ \mono{test_a.py}};
+        \node [itemnode, below=of dir2, xshift=1.15cm] (mod2) {Module \\ \mono{test_b.py}};
+        \node [itemnode, below=3mm of mod2, dashed] (mod3) {\mono{a.py}};
+
+        \draw [-, codeblue] (collector) -- (dir1);
+        \draw [-, codeblue] (dir1) -- (dir2);
+        \draw [-, codeblue] (dir2) -- (mod1);
+        \draw [-, codeblue] (dir2) -- (mod2);
+    \end{tikzpicture}
+\end{minipage}
+\pagebreak
+
+\subsection{Collection: Collecting tests}
+\dirtree{%
+    .1 \mono{pytest_collection}.
+    .2 \codeskip*.
+    .2 \mono{pytest_collectstart}.
+    .2 \mono{pytest_make_collect_report}.
+    .3 \mono{pytest_pycollect_makeitem}.
+    .3 \mono{pytest_pycollect_makeitem}.
+    .4 \highlightbox{\mono{pytest_generate_tests}}.
+    .5 \mono{pytest_make_parametrize_id}.
+    .3 \textnormal{(repeat)}.
+    .2 \mono{pytest_itemcollected}.
+    .2 \textnormal{(repeat)}.
+    .2 \mono{pytest_collectreport}.
+    .2 \highlightbox{\mono{pytest_collection_modifyitems}}.
+    .2 \mono{pytest_collection_finish}.
+    .3 \mono{pytest_report_collectionfinish}.
+}
+\vspace{1em}
+
+pytest builds up a collection tree of \mono{Collector} (has children) and \mono{Item} (leaf node; runnable
+test) instances. \\ Both are \mono{Node} subclasses.
+%\item Collectors' \mono{collect()} returns list of child \mono{Collector} and
+%      \mono{Item} instances.
+%\item Items' \mono{runtest()} runs a test.
+
+\vspace{.5em}
+Inspect the test collection tree: \\
+\mono{pytest --collect-only}
+\vspace{1em}
+
+%\iftoggle{includeyaml}{
+%    \begin{onlyenv}<2|handout:2>
+%        Attributes on Items and Collectors:
+
+%        \begin{description}[parent ]
+%            \item[parent] A reference to the collector that produced us
+%            \item[name] A name that is unique within the scope of our parent
+%            \item[config] Global configuration object
+%        \end{description}
+%    \end{onlyenv}
+%}{}
+
+%\vspace{-1em}
+\begin{tikzpicture}[itemnode/.style={bluenode, align=center}]
+    \node [itemnode, minimum width=2.5cm] (collector) {Collector \\[-0.4em] \scriptsize{(Node subclass)}};
+    \node [itemnode, minimum width=2.5cm, draw=codebluebright, text=codebluebright, below=3mm of collector] (dir) {Dir \\[-0.4em] \scriptsize{(Collector)}};
+    \node [right=3mm of dir, align=left, font=\footnotesize, text=codeblue] (expl) {\emph{Dir} nodes \\ introduced \\ in pytest 8};
+    \node [itemnode, below=3mm of dir, xshift=-1.5cm] (mod1) {Module \\[-0.4em] \scriptsize{(Collector)} \\ \mono{test_a.py}};
+    \node [itemnode, below=3mm of dir, xshift=1.5cm] (mod2) {Module \\[-0.4em] \scriptsize{(Collector)} \\ \mono{test_b.py}};
+
+    \node[itemnode, below=3mm of mod1, xshift=-2cm] (func1) {Function \\[-0.4em] \scriptsize{(Item)} \\ \py{def test_a1():}};
+    \node[itemnode, below=2cm of mod1, xshift=-1cm] (func2) {Function \\[-0.4em] \scriptsize{(Item)} \\ \py{def test_a2():}};
+
+    \node[itemnode, below=3mm of mod2, minimum width=4.0cm] (cls1) {Class \\[-0.4em] \scriptsize{(Collector)} \\ \py{class TestB:}};
+    \node[itemnode, below=2cm of mod2, minimum width=4.0cm] (func3) {Function \\[-0.4em] \scriptsize{(Item)} \\ \py{def test_b1(self):}};
+
+    \draw [-, codeblue] (collector) -- (dir);
+
+    \draw [-, codeblue] (dir) -- (mod1);
+    \draw [-, codeblue] (dir) -- (mod2);
+
+    \draw [-, codeblue] (func1) -- (mod1);
+    \draw [-, codeblue] (mod1) -- (mod1 |- func2.north);
+
+    \draw [-, codeblue] (cls1) -- (mod2);
+    \draw [-, codeblue] (cls1) -- (cls1 |- func3.north);
+\end{tikzpicture}
+
+\subsection{Collection: pytest\_collection\_modifyitems}
+We get a list of test items and can re-order or filter them.
+\vspace{-2.5em}
+
+\begin{center}
+    \begin{tikzpicture}[itemnode/.style={bluenode, align=center}]
+        \node[itemnode] (func1) {Item \\ \py{def test_a():}};
+        \node[itemnode, right=3mm of func1] (func2) {Item \\ \py{def test_b():}};
+        \node[itemnode, right=3mm of func2] (func3) {Item \\ \py{def test_c():}};
+
+        \draw [-, dotted] (func1) -- (func2);
+        \draw [-, dotted] (func2) -- (func3);
+    \end{tikzpicture}
+\end{center}
+
+\begin{minted}[autogobble,highlightlines=4]{python}
+        def pytest_collection_modifyitems(
+            session: pytest.Session,
+            config: pytest.Config,
+            items: list[pytest.Item],
+        ) -> None:
+\end{minted}
+
+\emph{Called after collection has been performed. \\ May filter or re-order the items in-place.}
+
+We can use the hook to e.g.\ add a marker to all tests using another marker:
+
+\begin{minted}[autogobble,highlightlines=3-4]{python}
+        def pytest_collection_modifyitems(items):
+            name = "skip_windows"
+            for item in items:
+                if item.get_closest_marker(name):
+                    item.add_marker(
+                        pytest.mark.skipif(
+                            sys.platform == "win32",
+                            reason="skipped on Windows",
+                        )
+                    )
+\end{minted}
+\pagebreak
+
+%\subsection{Collection: pytest\_generate\_tests}
+%\begin{minted}[autogobble]{python}
+%    def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+%        """Generate (multiple) parametrized calls to a test function."""
+%\end{minted}
+%
+%\vspace{.5em}
+%The actual parametrization is then done by calling:
+%\vspace{.25em}
+%
+%\begin{minted}[autogobble, escapeinside=||]{python}
+%    class Metafunc:
+%        def parametrize(
+%        self, |\highlightbox{argnames, argvalues}|, indirect=False, ids=None, scope=None
+%        ):
+%            |\codeskip|
+%\end{minted}
+%
+%
+%\vspace{.5em}
+%Inside pytest, the glue code that makes \py{@pytest.mark.parametrize} work is just:
+%\vspace{.25em}
+%
+%\begin{minted}[autogobble, escapeinside=||]{python}
+%        def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+%            for marker in metafunc.definition.iter_markers(name="parametrize"):
+%                metafunc.parametrize(*marker.args, **marker.kwargs, |\codeskip|)
+%    \end{minted}
+%% VS Code workaround
+%\if 0
+%    )
+%    \end{minted}\fi
+
+\subsection{Running tests}
+\dirtree{%
+    .1 \mono{pytest_runtestloop}.
+    .2 \mono{pytest_runtest_protocol}.
+    .3 \mono{pytest_runtest_logstart}.
+    .3 \textcolor{cyan}{\texttt{pytest\_runtest\_setup}}.
+    .3 \textcolor{cyan}{\texttt{pytest\_runtest\_makereport}}.
+    .3 \textcolor{cyan}{\texttt{pytest\_runtest\_logreport}}.
+    .4 \textcolor{cyan}{\texttt{pytest\_runtest\_teststatus}}.
+    .3 \textcolor{bruhinblue!60}{\texttt{pytest\_runtest\_call}}.
+    .4 \textcolor{bruhinblue!60}{\texttt{pytest\_pyfunc\_call}}.
+    .3 \textcolor{bruhinblue!60}{\codeskip* (\texttt{makereport}, \texttt{logreport})}.
+    .3 \textcolor{cyan}{\texttt{pytest\_runtest\_teardown}}.
+    .3 \textcolor{cyan}{\codeskip* (\texttt{makereport}, \texttt{logreport})}.
+    .3 \mono{pytest_runtest_logfinish}.
+    .2 \textnormal{(repeat)}.
+}
+\vspace{2em}
+
+\begin{center}
+    \begin{minipage}{.52\linewidth}
+        \begin{tikzpicture}[stepnode/.style={bluenode, minimum width=3.5cm}]
+            \node [stepnode] (bootstrap) {Bootstrapping};
+            \node [stepnode, below=1cm of bootstrap] (init) {Initialization};
+            \node [stepnode, below=1cm of init] (collect) {Collection};
+            \node [stepnode, below=1cm of collect, align=center, fill=highlightcolor] (run) {Running / Reporting};
+            \node [stepnode, below=1cm of run] (finish) {Finishing};
+
+            \draw [-, dotted, draw=codeblue] (bootstrap) -- (init);
+            \draw [-, dotted, draw=codeblue] (init) -- (collect);
+            \draw [-, dotted, draw=codeblue] (collect) -- (run);
+            \draw [-, dotted, draw=codeblue] (run) -- (finish);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{.46\linewidth}
+        \begin{tikzpicture}
+            \node [fixture, minimum width=3cm] (setup) {setup};
+            \node [test, below=1cm of setup, minimum width=3cm] (call) {call};
+            \node [fixture, below=0.75cm of call, minimum width=3cm] (teardown) {teardown};
+            \node [below=0.25cm of teardown, text=orange] (text) {for every test item};
+
+            \draw [-, dotted] (setup) -- (call);
+            \draw [-, dotted] (call) -- (teardown);
+
+            \begin{scope}[on background layer]
+                \node[fit=(setup)(text), fill=orangebg, rounded corners] {};
+            \end{scope}
+        \end{tikzpicture}
+    \end{minipage}
+\end{center}
+\pagebreak
+
+\section{Installable plugins}
+\sectionlink{plugin-installable}
+\vspace{.5em}
+
+You can package pytest like any other Python package, and add entry points to make it auto-discoverable by pytest:
+\vspace{1em}
+
+\filenameheadert{pyproject.toml}
+\begin{minted}[autogobble,escapeinside=||,highlightlines={2,5-6,8-9}]{toml}
+    [project]
+    name = "pytest-yamlcalc"
+    description = "yaml-based rpn calculator tests"
+    |\codeskip|
+    classifiers = ["Framework :: Pytest", |\codeskip*|]
+    dependencies = ["pytest>=7.0.0", |\codeskip*|]
+
+    [project.entry-points.pytest11]
+    yamlcalc = "pytest_yamlcalc.plugin"
+
+    [|\codeskip*|]
+    |\codeskip|
+\end{minted}
+\vspace{2em}
+
+\begin{center}
+\includegraphics[width=.7\linewidth]{img/cookiecutter.pdf}
+\end{center}
+
+The \mono{cookiecutter} project can generate the boilerplate:
+
+\begin{itemize}
+    \item \mono{pip install cookiecutter}
+    \item \mono{cookiecutter https://github.com/} \\ \mono{pytest-dev/cookiecutter-pytest-plugin}
+\end{itemize}
+\pagebreak
