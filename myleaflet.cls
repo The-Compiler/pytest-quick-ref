@@ -37,9 +37,7 @@
 }
 \let\LL@begindvi\@begindvi
 \@ifundefined{iflandscape}{\newif\iflandscape}{}%
-\@ifundefined{iftumble}{\newif\iftumble}{}%
 \@ifundefined{iftwopart}{\newif\iftwopart}{}%
-\@ifundefined{iffoldcorr}{\newif\iffoldcorr}{}%
 \newlength\LL@tempdima
 \newcommand\LL@debug@info[1]{}%
 \DeclareOption{dvips}{\PassOptionsToPackage{\CurrentOption}{graphics}}
@@ -53,25 +51,13 @@
 \DeclareOption{debug}{\let\LL@debug@info\typeout}
 \DeclareOption{twopart}{\twoparttrue}
 \DeclareOption{notwopart}{\twopartfalse}
-\DeclareOption{nospecialtricks}{%
-  \AtEndOfClass{%
-    \ifLL@combine
-      \let\immediate\@@@immediate\let\write\@@@write
-      \let\openout\@@@openout\let\closeout\@@@closeout
-      \let\special\@@@special\let\@@@exec@outs\relax
-    \fi}}
 \newcommand*\LL@setPaperSize{}
 \DeclareOption{a3paper}{\def\LL@setPaperSize{%
   \paperwidth=420mm\paperheight=297mm\relax}}%
-\@ifdefinable\ifLL@combine{\newif\ifLL@combine}
-\DeclareOption{combine}{\LL@combinetrue}
-\DeclareOption{nocombine}{\LL@combinefalse}
 \newcommand*\LL@selectOutput{}
 \DeclareOption{frontside}{\def\LL@selectOutput#1#2{#1}}
 \DeclareOption{backside}{\def\LL@selectOutput#1#2{#2}}
 \DeclareOption{bothsides}{\def\LL@selectOutput#1#2{#1#2}}
-\DeclareOption{tumble}{\tumbletrue}
-\DeclareOption{notumble}{\tumblefalse}
 \newcommand*\LL@foldmark{}
 \DeclareOption{foldmark}{%
   \def\LL@foldmark{%
@@ -85,161 +71,10 @@
 \DeclareOption{nofoldmark}{\def\LL@foldmark{}}%
 \DeclareOption{foldcorr}{\foldcorrtrue}
 \DeclareOption{nofoldcorr}{\foldcorrfalse}
-\newcommand*\LL@toomanypages[2]{}
-\DeclareOption{draft}{\PassOptionsToClass{\CurrentOption}{article}%
-  \AtEndOfClass{%
-    \def\LL@toomanypages#1#2{%
-        \ClassWarningNoLine{leaflet}{#1.\MessageBreak#2}}%
-  }%
-}
-\DeclareOption{final}{\PassOptionsToClass{\CurrentOption}{article}%
-  \AtEndOfClass{%
-    \ifLL@combine
-      \def\LL@toomanypages#1#2{%
-        \ClassError{leaflet}{#1}{#2.}}%
-    \else
-      \def\LL@toomanypages#1#2{%
-        \ClassWarningNoLine{leaflet}{#1.\MessageBreak#2}}%
-    \fi
-  }%
-}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \PassOptionsToClass{landscape,a4paper}{article}
-\ExecuteOptions{tumble,foldmark,bothsides,combine,landscape,notwopart}
+\ExecuteOptions{foldmark,bothsides,landscape,notwopart}
 \ProcessOptions\relax
-\ifLL@combine
-  \newcommand*\LL@rotate@I{}\newcommand*\LL@rotate@II{}%
-  \iflandscape
-    \def\LL@rotate@I#1{#1}%
-    \iftumble
-      \def\LL@rotate@II#1{\rotatebox[origin=c]{180}{#1}}%
-    \else
-      \def\LL@rotate@II#1{#1}%
-    \fi
-  \else
-    \def\LL@rotate@I#1{\rotatebox[origin=c]{90}{#1}}%
-    \iftumble
-      \def\LL@rotate@II#1{\rotatebox[origin=c]{270}{#1}}%
-    \else
-      \def\LL@rotate@II#1{\rotatebox[origin=c]{90}{#1}}%
-    \fi
-  \fi
-  \def\@@@pending@outs{}\let\@@@immediate\immediate
-  \let\@@@write\write \let\@@@special\special
-  \let\@@@openout\openout \let\@@@closeout\closeout
-  \def\immediate{%
-    \let\write\immediate@write%
-    \let\openout\immediate@openout%
-    \let\closeout\immediate@closeout%
-    \let\special\immediate@special}%
-  \def\reset@immediate{%
-    \let\write\pending@write%
-    \let\openout\pending@openout%
-    \let\closeout\pending@closeout%
-    \let\special\@@@special}%
-  \long\def\pending@write#1#{\pending@@write{#1}}
-  \def\immediate@write{%
-    \reset@immediate\@@@immediate\@@@write}%
-  \def\immediate@openout{%
-    \reset@immediate\@@@immediate\@@@openout}%
-  \def\immediate@closeout{%
-    \reset@immediate\@@@immediate\@@@closeout}%
-  \def\immediate@special{%
-    \reset@immediate\@@@immediate\@@@special}%
-  \let\write\pending@write
-  \let\openout\pending@openout
-  \let\closeout\pending@closeout
-  \def\@dummy@whatsit{\special{}}
-  \begingroup\@ifundefined{pdfoutput}%
-  {\endgroup}
-  {\endgroup
-   \ifnum\pdfoutput>\z@\def\@dummy@whatsit{\pdfliteral{}}\fi}
-  \begingroup\expandafter\expandafter\expandafter\endgroup
-  \expandafter\ifx\csname eTeXversion\endcsname\relax
-    %%% Test is from Markus Kohm (d.c.t.t, 29 Jun 2004)
-    \ClassWarningNoLine{leaflet}{%
-    *************************************\MessageBreak
-    * It's very recommended to use eTeX  \MessageBreak
-    * with this package!                 \MessageBreak
-    *************************************}%
-    \long\def\pending@@write#1#2{%
-      \@dummy@whatsit
-      \g@addto@macro\@@@pending@outs{\@@@immediate\@@@write\number#1{#2},}}%
-    \def\pending@openout#1 {%
-      \@dummy@whatsit
-      \g@addto@macro\@@@pending@outs{\@@@immediate\@@@openout\number#1,}}%
-    \def\pending@closeout#1{%
-      \@dummy@whatsit
-      \g@addto@macro\@@@pending@outs{\@@@immediate\@@@closeout\number#1,}}%
-    \newcommand*\@@@exec@outs{%
-      \@@@pending@outs\gdef\@@@pending@outs{}%
-      \LL@debug@info{%
-        >>> execute the output commands of the current page <<<}}%
-  \else
-    \RequirePackage{etex}
-    \globmarks\@@@out@mark
-    \newcounter{@@total@outs}\setcounter{@@total@outs}{0}
-    \newcounter{@@last@exec}\setcounter{@@last@exec}{0}
-  \long\def\pending@@write#1#2{%
-    \global\advance\c@@@total@outs\@ne%
-    \marks\@@@out@mark{\the\c@@@total@outs}%
-    \g@addto@macro\@@@pending@outs{\@@@immediate\@@@write\number#1{#2},}}%
-\def\pending@openout#1 {%
-  \global\advance\c@@@total@outs\@ne%
-  \marks\@@@out@mark{\the\c@@@total@outs}%
-  \g@addto@macro\@@@pending@outs{\@@@immediate\@@@openout\number#1,}}%
-\def\pending@closeout#1{%
-  \global\advance\c@@@total@outs\@ne%
-  \marks\@@@out@mark{\the\c@@@total@outs}%
-  \g@addto@macro\@@@pending@outs{\@@@immediate\@@@closeout\number#1,}}%
-\newcommand*\@@@exec@outs{%
-  \begingroup
-    \@tempcntb\c@@@total@outs\advance\@tempcntb-\c@@@last@exec%
-    \edef\reserved@a{\botmarks\@@@out@mark}%
-    \ifx\reserved@a\@empty\@tempcnta\z@\else\@tempcnta\reserved@a\fi%
-    \LL@debug@info{PENDING-OUTS:\the\@tempcntb\space\space
-                   TOTAL-OUTS:\the\c@@@total@outs\space\space
-                   LAST-EXEC:\the\c@@@last@exec\space\space
-                   TOPMARK:\topmarks\@@@out@mark\space\space
-                   FIRSTMARK:\firstmarks\@@@out@mark\space\space
-                   BOTMARK:\botmarks\@@@out@mark}%
-    \advance\@tempcnta-\c@@@total@outs \advance\@tempcntb\@tempcnta
-    \@tempcnta-\@tempcnta%
-    \ifnum\@tempcnta>\z@
-      \LL@debug@info{%
-        >>> resave \the\@tempcnta\space output command(s).
-            Too early to execute! <<<}%
-    \fi
-    \@tempcnta\z@ \def\reserved@b{}%
-    \set@display@protect
-    \@for\reserved@a :=\@@@pending@outs\do{%
-      \ifx\reserved@a\@empty\else
-        \ifnum\@tempcnta<\@tempcntb%
-          \reserved@a%  execute output's related to the current page box.
-          \global\advance\c@@@last@exec\@ne
-          \LL@debug@info{>>> execute output command number
-                   \the\c@@@last@exec\space<<<}%
-        \else
-          \expandafter\g@addto@macro\expandafter\reserved@b\expandafter{%
-            \reserved@a,}%
-        \fi
-        \advance\@tempcnta\@ne%
-      \fi}%
-    \expandafter\@temptokena\expandafter{\reserved@b}%
-    \xdef\@@@pending@outs{\the\@temptokena}%
-  \endgroup}%
-  \fi% end of eTeX test.
-  \long\def\protected@write#1#2#3{%
-    \begingroup
-       \let\thepage\relax
-       #2%
-       \let\protect\@unexpandable@protect
-       \edef\reserved@a{\noexpand\write#1{#3}}%
-       \reserved@a%
-    \endgroup
-    \if@nobreak\ifvmode\nobreak\fi\fi}%
-  \let\@begindvi\@empty
-\fi% end of \ifLL@combine
 \LoadClass{article}
 \RequirePackage{graphicx}
 \newcommand*\LL@pagesize@specials[2]{}
@@ -415,83 +250,13 @@
 \setmargins{11mm}{11mm}{8mm}{8mm}
 \newcommand*\foldmarkrule{0.4pt}
 \newcommand*\foldmarklength{2mm}
-\newcommand\AddToBackground{%
-  \@ifstar{\@tempswatrue\LL@AddToBackground}
-          {\@tempswafalse\LL@AddToBackground}}
-\@onlypreamble\AddToBackground
-\newcommand\LL@AddToBackground[2]{%
-  \if@tempswa\def\@tempa{LL@largePic}\else\def\@tempa{LL@smallPic}\fi
-  \expandafter\providecommand\csname\@tempa\@Roman{#1}\endcsname{}%
-  \expandafter\g@addto@macro\csname\@tempa\@Roman{#1}\endcsname{#2}}
-\newcommand*\CutLine{%
-  \@ifstar{\@tempswafalse\LL@CutLine}{\@tempswatrue\LL@CutLine}}
-\@onlypreamble\CutLine
-\newcommand*\LL@CutLine[2][.]{%
-  \ifLL@combine
-    \ifx\Scissors\@empty\@tempswafalse\fi
-    \if .#1%
-      \def\@tempa{\dotfill}%
-    \else\if -#1%
-      \def\@tempa{\hrulefill}%
-    \fi\fi
-    \edef\@tempb{%
-      \noexpand\AddToBackground{#2}{%
-        \noexpand\put(0,0){%
-          \noexpand\rotatebox{90}{\noexpand\makebox(\paperheight,0){%
-            \noexpand\normalsize\@tempa\if@tempswa\noexpand\Scissors%
-              \@tempa\@tempa\noexpand\Scissors\@tempa\fi}}}}%
-    }%
-    \@tempb
-  \fi}
-\IfFileExists{pifont.sty}
-  {\RequirePackage{pifont}%
-   \newcommand*\Scissors{\raisebox{-0.85ex}{\large\ding{34}}}}%
-  {\newcommand*\Scissors{}}
-\AddToBackground{3}{\LL@foldmark}
 \providecommand*\vb@xt@{\vbox to}
 \AtBeginDocument{\AddToHook{shipout/before}{\LL@processPage}}
 \newcounter{LL@page}\setcounter{LL@page}{1}
 \newcommand\LL@tempa{}
 \newcommand*\LL@processPage{%
-  \ifLL@combine\DiscardShipoutBox\fi
   \ifnum\c@LL@page<7\relax
     \LL@tempdima=\paperwidth
-    \ifLL@combine
-      \iffoldcorr
-        \@tempswafalse
-        \ifnum\c@LL@page=4\relax
-          \@tempswatrue
-        \else
-          \ifnum\c@LL@page=5\relax
-            \@tempswatrue
-          \fi
-        \fi
-        \if@tempswa\LL@tempdima=0.9797979798\paperwidth
-        \else\LL@tempdima=1.0101010101\paperwidth \fi
-      \fi
-      \@@@exec@outs
-      \expandafter\newsavebox\csname LL@box\Roman{LL@page}\endcsname%
-      \setbox\ShipoutBox=\vbox{\vskip1in\unvbox\ShipoutBox}%
-      \setbox\ShipoutBox=\vbox{\moveright1in\box\ShipoutBox}%
-      \setbox\ShipoutBox=\hb@xt@\paperwidth{\box\ShipoutBox\hss}%
-      \iffoldcorr
-        \setbox\ShipoutBox=\hb@xt@\LL@tempdima{\hss\box\ShipoutBox\hss}\fi
-      \setbox\ShipoutBox=\vb@xt@\paperheight{%
-        \vbox{%
-          \pictur@(0,0)(0,\paperheight)%
-            \begingroup
-              \set@typeset@protect
-              \paperwidth=\LL@tempdima
-              \@nameuse{LL@smallPic\Roman{LL@page}}%
-            \endgroup
-          \endpicture
-        }%
-        \nointerlineskip\box\ShipoutBox\vss
-      }%
-      \global\expandafter\setbox
-        \csname LL@box\Roman{LL@page}\endcsname=\box\ShipoutBox
-      \typeout{\@spaces[\the\c@LL@page] ==> [\Roman{LL@page}]}%
-    \else
       \setbox\ShipoutBox\vbox{%
         \vbox{\@tempdima=1in\relax
           \@tempdimb=\paperheight\advance\@tempdimb-\@tempdima
@@ -505,72 +270,9 @@
         \nointerlineskip\box\ShipoutBox
       }%
     \fi
-  \fi
-  \ifnum\c@LL@page=7\relax
-    \begingroup
-      \set@typeset@protect
-      \LL@toomanypages{%
-        The text you supplied fills more than six pages\MessageBreak
-        and will therefore not fit onto a single flyer}{%
-        Try using smaller fonts or reducing vertical space}%
-    \endgroup
-  \fi
   \stepcounter{LL@page}}
-\newcommand*\LL@add@empty@pages{%
-   \clearpage\pagestyle{empty}%
-   \loop\ifnum\c@LL@page<7\relax
-     \ClassInfo{leaflet}{Generating empty page \the\c@page}%
-     \null\newpage
-   \repeat
-}
-\newcommand*\LL@shipout@combined@pages{%
-  \RemoveFromHook{shipout/foreground}[*]
-  \RemoveFromHook{shipout/background}[*]
-  \RemoveFromHook{shipout/lastpage}[*]
-  \RemoveFromHook{shipout/before}[*]
-  \AddToHook{shipout/before}{\LL@processPage}
-  \LL@add@empty@pages
-  \RemoveFromHook{shipout/before}[*]
-  \let\@begindvi\LL@begindvi
-  \paperwidth=3\paperwidth
-  \iflandscape
-    \LL@pagesize@specials{\paperwidth}{\paperheight}%
-  \else
-    \LL@pagesize@specials{\paperheight}{\paperwidth}%
-  \fi
-  \newcommand*\LL@shipoutPage[1]{%
-    \let \protect \noexpand
-    \shipout\vb@xt@\paperheight{%
-      \set@typeset@protect
-      \vskip-1in%
-      \@begindvi\hb@xt@\paperwidth{\hskip-1in##1\hss}\vss}}%
-  \newcommand*\LL@preparePages[3]{%
-    \typeout{[\@Roman{##1}\space\@Roman{##2}\space\@Roman{##3}] ==>}%
-    \pictur@(0,0)\@nameuse{LL@largePic\Roman{page}}\endpicture%
-    \LL@preparePage{##1}\LL@preparePage{##2}\LL@preparePage{##3}}%
-  \newcommand*\LL@preparePage[1]{%
-    \expandafter\box\csname LL@box\@Roman{##1}\endcsname}%
-  \LL@selectOutput
-  \iftwopart
-    {\setcounter{page}{1}%
-     \LL@shipoutPage{\LL@rotate@I{\LL@preparePages{6}{4}{1}}}}%
-    {\setcounter{page}{2}%
-     \LL@shipoutPage{\LL@rotate@II{\LL@preparePages{2}{3}{5}}}}%
-  \else
-    {\setcounter{page}{1}%
-     \LL@shipoutPage{\LL@rotate@I{\LL@preparePages{5}{6}{1}}}}%
-    {\setcounter{page}{2}%
-     \LL@shipoutPage{\LL@rotate@II{\LL@preparePages{2}{3}{4}}}}%
-  \fi
-}%
-\ifLL@combine
-  \AddToHook{enddocument/end}{\LL@shipout@combined@pages}
-\else
-  \LL@pagesize@specials{\paperwidth}{\paperheight}%
-  \AtEndDocument{%
-    \LL@add@empty@pages
-  }
-\fi
+
+\LL@pagesize@specials{\paperwidth}{\paperheight}%
 \endinput
 %%
 %% End of file `leaflet.cls'.
