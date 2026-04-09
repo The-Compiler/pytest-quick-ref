@@ -1,6 +1,6 @@
-%\section{Debugging failing tests}  % FIXME
+\section{Debugging failing tests}
 
-\linksection{output}{Args to control output}
+\linksubsection{output}{Args to control output}
 \begin{tabular}{rrl}
               & \mono{--tb}                                                                                            & Control traceback generation  \\
               & \multicolumn{2}{l}{\mono{auto} / \mono{long} / \mono{short} / \mono{line} / \mono{native} / \mono{no}}                                 \\
@@ -21,7 +21,7 @@
 \py[escapeinside=||]{|\codeindent{4}|return a / b} \\
 \monot[termred]{E \ \ ZeroDivisionError:\ division by zero}
 
-\linksection{mathspp-select}{Args to select tests}
+\linksubsection{mathspp-select}{Args to select tests}
 \newcommand*{\drawex}[1]{%
     \begin{tikzpicture}[
             base/.style={test, minimum height=5mm},
@@ -62,7 +62,7 @@
     \multicolumn{3}{l}{\drawex{1/good, 2/bad}\runsep{}\drawex{2/bad}\runsep{}\drawex{2/bad}\runsep{}\drawex{2/good, 3/good, 4/bad}\runsep{}\drawex{4/bad}\runsep{}\drawex{4/good, 5/good}} \\
 \end{tabular}
 
-\section{Tracing fixture execution}
+\subsection{Tracing fixture execution}
 \begin{description}
     \item[\mono{--setup-show}] Show fixtures as they are set up, used and torn down.
     \item[\mono{--setup-only}] Only setup fixtures, do not execute tests.
@@ -83,7 +83,7 @@ Reminder: \mono{--fixtures} and \mono{--fixtures-per-test} can be useful as well
 
 \textsb{F}: function scope, there is also \textsb{C}lass, \textsb{M}odule, \textsb{P}ackage, and \textsb{S}ession.
 
-\section{Adding information to an assert}
+\subsection{Adding information to an assert}
 Using a comma after \py[escapeinside=||]{assert |\codeskip|}, additional information can be printed:
 
 \begin{minted}[autogobble, escapeinside=||]{python}
@@ -102,7 +102,7 @@ Output:
     |\textcolor{termred}{E    assert 4.0 == 6}|
 \end{minted}
 
-\linksection{pdb}{The pdb debugger}
+\linksubsection{pdb}{The pdb debugger}
 pdb is a command-line debugger for Python. \\
 Trigger it with \mono{--pdb} or \mono{--trace} in pytest, \\
 or \py{breakpoint()} in your code.
@@ -119,7 +119,7 @@ At the \mono{(pdb)} prompt, you can use:
     \item[\mono{interact}] Open Python shell
 \end{description}
 
-\section{Showing slow test durations}
+\subsection{Showing slow test durations}
 Running e.g.\ \mono{pytest --durations=20} shows slow tests:
 
 \begin{minted}[autogobble,escapeinside=||]{text}
@@ -138,7 +138,7 @@ Running e.g.\ \mono{pytest --durations=20} shows slow tests:
     See e.g. Symerio: \enquote{Profiling Python code to optimize run time}.
 \end{minipage}
 
-\linksection{faulthandler}{Hanging tests}
+\linksubsection{faulthandler}{Hanging tests}
 \begin{minipage}{.45\linewidth}
     \begin{minted}[autogobble]{python}
     def hang():
@@ -188,7 +188,7 @@ pytest 9 adds a \inikey{faulthandler_exit_on_timeout} option to quit pytest on t
 
 \vspace{-2em}
 
-\linksection{flaky}{Flaky tests}
+\linksubsection{flaky}{Flaky tests}
 The \mono{pytest-rerunfailures} plugin reruns flaky tests:
 
 \begin{minted}[autogobble,highlightlines=4]{python}

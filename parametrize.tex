@@ -10,7 +10,7 @@
         assert add(a, b) == expected
 \end{minted}
 
-\linksection{mathspp-param}{Permutations}
+\linksubsection{mathspp-param}{Permutations}
 \begin{minted}[autogobble]{python}
     @pytest.mark.parametrize("a", [1, 2])
     @pytest.mark.parametrize("b", [3, 4])
@@ -23,7 +23,7 @@ Test runs 4 times: 1 + 3 \quad 1 + 4 \quad 2 + 3 \quad 2 + 4.
 Can be useful for bool flags (e.g. \py{strict=True/False} where all cases should behave the same).
 
 \vspace{-1em}
-\linksection{param}{pytest.param}
+\linksubsection{param}{pytest.param}
 
 Instead of tuples, \py{pytest.param} objects can be passed to \mono{parametrize}, which additionally take \mono{marks} and \mono{id}:
 

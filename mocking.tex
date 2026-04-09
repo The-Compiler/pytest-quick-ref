@@ -1,4 +1,5 @@
-\linksection{unittest-mock}{unittest.mock}
+\section{Mocking}
+\linksubsection{unittest-mock}{unittest.mock}
 
 The \mono{pytest-mock} plugin exposes \mono{unittest.mock} features via a \mono{mocker} fixture.
 \mono{Mock} objects are \enquote{magic} objects that can pretend to be anything.
@@ -108,7 +109,7 @@ Then we run the tests, which use the mock like a real object. The mock remembers
     Actual:   |\highlightbox{send(\PYG{s}{\PYGZsq{}cmd\PYGZsq{}})}|
 \end{minted}
 
-\section{Mocking libraries}
+\subsection{Mocking libraries}
 
 Sometimes there are ready-made mocking libraries, so there is no need to hand-roll mocks:
 

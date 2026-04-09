@@ -1,5 +1,5 @@
 
-\linksection{filterwarnings}{filterwarnings}
+\linksubsection{filterwarnings}{filterwarnings}
 Turning warning into errors, but ignoring known warnings (e.g.\ from dependencies):
 
 \begin{minted}[autogobble]{ini}
@@ -18,7 +18,8 @@ Turning warning into errors, but ignoring known warnings (e.g.\ from dependencie
 \hspace{5em} $\uparrow{}$ warning category \hspace{1em} $\uparrow{}$ module
 \vspace{-1em}
 
-\linksection{raises}{pytest.raises}
+\section{API}
+\linksubsection{raises}{pytest.raises}
 
 \begin{minted}[autogobble]{python}
     with pytest.raises(ValueError):
@@ -50,7 +51,7 @@ Getting the exception info object:
 \textbf{Note:} The \py{assert} must be \textsb{outside} the \py{with} block!
 
 
-\linksection{approx}{pytest.approx}
+\linksubsection{approx}{pytest.approx}
 
 Floating point comparisons need a tolerance:
 \vspace{-.6em}

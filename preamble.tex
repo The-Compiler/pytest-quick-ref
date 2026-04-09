@@ -61,7 +61,8 @@
     \quad
     \raisebox{-.2ex}{\textcolor{codeblue}{\qrcode[height=1.5\baselineskip]{https://pyte.st/#1}}}%
 }
-\newcommand{\linksection}[2]{\section*{\makebox[\linewidth][s]{#2\sectionlink{#1}}}}
+\newcommand{\linksection}[2]{\section[#2]{\makebox[\linewidth][s]{#2\sectionlink{#1}}}}
+\newcommand{\linksubsection}[2]{\subsection[#2]{\makebox[\linewidth][s]{#2\sectionlink{#1}}}}
 
 % https://tex.stackexchange.com/a/729325
 \newlength{\codespacelength}

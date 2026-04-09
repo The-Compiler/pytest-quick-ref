@@ -1,4 +1,5 @@
-\linksection{fixt-parametrize}{Fixt. params}
+\section{Advanced fixture parametrization}
+\linksubsection{fixt-parametrize}{Fixture params}
 
 \begin{minted}[autogobble,escapeinside=||,highlightlines=1]{python}
     @pytest.fixture(params=["a.json", "b.json"])
@@ -36,7 +37,7 @@ Now each test using the \mono{config} fixture will run twice:
 \end{centering}
 \vspace{-.5em}
 
-\linksection{indirect}{Indirect parametrization}
+\linksubsection{indirect}{Indirect parametrization}
 \begin{minted}[autogobble,escapeinside=||,highlightlines=7]{python}
     @pytest.fixture
     def config(request):
@@ -49,13 +50,14 @@ Now each test using the \mono{config} fixture will run twice:
         assert config.debug == debug
 \end{minted}
 
+\vspace{-.5em}
 Now the test decides how the fixture gets parametrized,
 and the test function gets the fixture return value:
 \vspace{.5em}
 
 \begin{tikzpicture}[test/.append style={minimum width=4.5cm}]
     \node [test, dashed, minimum width=5.5cm] (testbase) {\mono{test_debug}};
-    \node [test, below=5mm of testbase, minimum height=1cm, minimum width=5.5cm] (testprod) {\monot{test\_debug[\textcolor{pygnum}{prod.json}-\textcolor{pygnum}{False}]}};
+    \node [test, below=4mm of testbase, minimum height=1cm, minimum width=5.5cm] (testprod) {\monot{test\_debug[\textcolor{pygnum}{prod.json}-\textcolor{pygnum}{False}]}};
     \node [test, below=-0.5pt of testprod, minimum height=1cm, minimum width=5.5cm] (testdev) {\monot{test\_debug[\textcolor{pygnum}{dev.json}-\textcolor{pygnum}{True}]}};
 
     \node [fixture, right=5mm of testprod, align=center, minimum height=1cm, minimum width=2.3cm] (fixtprod) {\mono{config} \\ \py{"prod.json"}};
