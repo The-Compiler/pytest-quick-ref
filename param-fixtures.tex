@@ -17,9 +17,8 @@
 
 \vspace{-.5em}
 Now each test using the \mono{config} fixture will run twice:
-\vspace{.5em}
 
-\begin{centering}
+\begin{center}
     \begin{tikzpicture}
         \node [fixture, dashed, minimum width=1.5cm] (config) {\mono{config}};
         \node [fixture, below=2mm of config, xshift=-2cm, align=center, minimum width=2cm, minimum height=1cm] (gt) {\mono{config} \\ \py{"a.json"}};
@@ -34,7 +33,7 @@ Now each test using the \mono{config} fixture will run twice:
         \draw [->] (testgt) -- (gt);
         \draw [->] (testrpn) -- (rpn);
     \end{tikzpicture}
-\end{centering}
+\end{center}
 \vspace{-.5em}
 
 \linksubsection{indirect}{Indirect Parametrization}
