@@ -1,6 +1,7 @@
-\section{Debugging failing tests}
+\section{Debugging Failing Tests}
 
-\linksubsection{output}{Args to control output}
+\linksubsection{output}{Args to Control Output}
+
 \begin{tabular}{rrl}
               & \mono{--tb}                                                                                            & Control traceback generation  \\
               & \multicolumn{2}{l}{\mono{auto} / \mono{long} / \mono{short} / \mono{line} / \mono{native} / \mono{no}}                                 \\
@@ -10,7 +11,7 @@
     \mono{-v} & \mono{--verbose}                                                                                       & Increase verbosity            \\
               &                                                                                                        & (can be given multiple times) \\
 \end{tabular}
-\vspace{1em}
+\vspace{.5em}
 
 \monot{\$ pytest \highlightbox{--tb=short} basic/test\_traceback.py} \\
 \codeskip \\
@@ -21,7 +22,9 @@
 \py[escapeinside=||]{|\codeindent{4}|return a / b} \\
 \monot[termred]{E \ \ ZeroDivisionError:\ division by zero}
 
-\linksubsection{mathspp-select}{Args to select tests}
+\subsection{Arguments to Select Tests}
+\sectionlink{mathspp-select}
+
 \newcommand*{\drawex}[1]{%
     \begin{tikzpicture}[
             base/.style={test, minimum height=5mm},
@@ -48,6 +51,7 @@
 
 \raisebox{.75ex}{after} \hspace{.25em} \drawex{1/good, 2/bad, 3/good, 4/bad, 5/good} \\[.5em]
 \raisebox{.7ex}{pass:} \drawex{\phantom{1}/good} \hspace{1em} \raisebox{.7ex}{fail:} \drawex{\phantom{1}/bad} \hspace{1em} \raisebox{.7ex}{new:} \drawex{\phantom{1}/new} \\[.5em]
+\vspace{-1em}
 
 \begin{tabular}{rrl}
     \mono{--lf} & \mono{--last-failed}                             & Run last-failed only                                                                                                  \\[.1em]
@@ -62,7 +66,7 @@
     \multicolumn{3}{l}{\drawex{1/good, 2/bad}\runsep{}\drawex{2/bad}\runsep{}\drawex{2/bad}\runsep{}\drawex{2/good, 3/good, 4/bad}\runsep{}\drawex{4/bad}\runsep{}\drawex{4/good, 5/good}} \\
 \end{tabular}
 
-\subsection{Tracing fixture execution}
+\subsection{Tracing Fixture Execution}
 \begin{description}
     \item[\mono{--setup-show}] Show fixtures as they are set up, used and torn down.
     \item[\mono{--setup-only}] Only setup fixtures, do not execute tests.
@@ -72,7 +76,7 @@
 Reminder: \mono{--fixtures} and \mono{--fixtures-per-test} can be useful as well.
 \vspace{.5em}
 
-\textbf{Output:}
+\textsb{Output:}
 
 \begin{minted}[autogobble,escapeinside=||]{text}
     test_f.py 
@@ -83,7 +87,7 @@ Reminder: \mono{--fixtures} and \mono{--fixtures-per-test} can be useful as well
 
 \textsb{F}: function scope, there is also \textsb{C}lass, \textsb{M}odule, \textsb{P}ackage, and \textsb{S}ession.
 
-\subsection{Adding information to an assert}
+\subsection{Adding Information to an Assert}
 Using a comma after \py[escapeinside=||]{assert |\codeskip|}, additional information can be printed:
 
 \begin{minted}[autogobble, escapeinside=||]{python}
@@ -95,14 +99,15 @@ Using a comma after \py[escapeinside=||]{assert |\codeskip|}, additional informa
         assert rpn.stack[-1] == 6|\highlightbox{, rpn.stack}|
 \end{minted}
 
-Output:
+\textsb{Output:}
 
 \begin{minted}[autogobble, escapeinside=||]{text}
     |\textcolor{termred}{E    AssertionError: \highlightbox{[2.0, 4.0]}}|
     |\textcolor{termred}{E    assert 4.0 == 6}|
 \end{minted}
 
-\linksubsection{pdb}{The pdb debugger}
+\pagebreak
+\linksubsection{pdb}{The pdb Debugger}
 pdb is a command-line debugger for Python. \\
 Trigger it with \mono{--pdb} or \mono{--trace} in pytest, \\
 or \py{breakpoint()} in your code.
@@ -119,7 +124,7 @@ At the \mono{(pdb)} prompt, you can use:
     \item[\mono{interact}] Open Python shell
 \end{description}
 
-\subsection{Showing slow test durations}
+\subsection{Showing Slow Test Durations}
 Running e.g.\ \mono{pytest --durations=20} shows slow tests:
 
 \begin{minted}[autogobble,escapeinside=||]{text}
@@ -138,7 +143,10 @@ Running e.g.\ \mono{pytest --durations=20} shows slow tests:
     See e.g. Symerio: \enquote{Profiling Python code to optimize run time}.
 \end{minipage}
 
-\linksubsection{faulthandler}{Hanging tests}
+\subsection{Dealing with Hanging Tests}
+\sectionlink{faulthandler}
+\vspace{.5em}
+
 \begin{minipage}{.45\linewidth}
     \begin{minted}[autogobble]{python}
     def hang():
@@ -188,7 +196,7 @@ pytest 9 adds a \inikey{faulthandler_exit_on_timeout} option to quit pytest on t
 
 \vspace{-2em}
 
-\linksubsection{flaky}{Flaky tests}
+\linksubsection{flaky}{Dealing with Flaky Tests}
 The \mono{pytest-rerunfailures} plugin reruns flaky tests:
 
 \begin{minted}[autogobble,highlightlines=4]{python}

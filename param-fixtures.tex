@@ -1,5 +1,5 @@
 \section{Advanced fixture parametrization}
-\linksubsection{fixt-parametrize}{Fixture params}
+\linksubsection{fixt-parametrize}{Fixture Params}
 
 \begin{minted}[autogobble,escapeinside=||,highlightlines=1]{python}
     @pytest.fixture(params=["a.json", "b.json"])
@@ -37,7 +37,7 @@ Now each test using the \mono{config} fixture will run twice:
 \end{centering}
 \vspace{-.5em}
 
-\linksubsection{indirect}{Indirect parametrization}
+\linksubsection{indirect}{Indirect Parametrization}
 \begin{minted}[autogobble,escapeinside=||,highlightlines=7]{python}
     @pytest.fixture
     def config(request):

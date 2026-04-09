@@ -1,4 +1,4 @@
-\linksection{writing-plugins}{Writing plugins}
+\linksection{writing-plugins}{Writing Plugins}
 Plugins come in two flavours:
 
 \begin{itemize}
@@ -69,7 +69,7 @@ As with fixtures, imagine pytest calling your function with keyword arguments:
     \end{minted}\fi
 
 \pagebreak
-\linksubsection{hooks-ref}{Hooks reference}
+\linksubsection{hooks-ref}{Hooks Reference}
 \dirtree{%
     .1 \mono{main()}.
     .2 \textnormal{Import and register built-in plugins:} \\ \mono{pytest_plugin_registered}.
@@ -104,7 +104,7 @@ As with fixtures, imagine pytest calling your function with keyword arguments:
 \end{center}
 \pagebreak
 
-\subsection{Collection: Collecting files}
+\subsection{Collection: Collecting Files}
 
 \dirtree{%
     .1 \mono{pytest_collection}.
@@ -160,7 +160,7 @@ As with fixtures, imagine pytest calling your function with keyword arguments:
 \end{minipage}
 \pagebreak
 
-\subsection{Collection: Collecting tests}
+\subsection{Collection: Collecting Tests}
 \dirtree{%
     .1 \mono{pytest_collection}.
     .2 \codeskip*.
@@ -254,6 +254,7 @@ We get a list of test items and can re-order or filter them.
 
 \emph{Called after collection has been performed. \\ May filter or re-order the items in-place.}
 
+\vspace{1em}
 We can use the hook to e.g.\ add a marker to all tests using another marker:
 
 \begin{minted}[autogobble,highlightlines=3-4]{python}
@@ -268,6 +269,11 @@ We can use the hook to e.g.\ add a marker to all tests using another marker:
                         )
                     )
 \end{minted}
+
+\vfill
+\includegraphics[width=\linewidth]{img/illustrations/marks.png}
+\vfill
+
 \pagebreak
 
 %\subsection{Collection: pytest\_generate\_tests}
@@ -303,7 +309,7 @@ We can use the hook to e.g.\ add a marker to all tests using another marker:
 %    )
 %    \end{minted}\fi
 
-\subsection{Running tests}
+\subsection{Running Tests}
 \dirtree{%
     .1 \mono{pytest_runtestloop}.
     .2 \mono{pytest_runtest_protocol}.
@@ -355,7 +361,7 @@ We can use the hook to e.g.\ add a marker to all tests using another marker:
 \end{center}
 \pagebreak
 
-\subsection{Installable plugins}
+\subsection{Installable Plugins}
 \sectionlink{plugin-installable}
 \vspace{.5em}
 

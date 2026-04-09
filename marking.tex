@@ -1,5 +1,5 @@
 
-\section{Reusing marks}
+\section{Reusing Marks}
 A mark can also be stored in a variable and reused:
 
 \begin{minted}[autogobble,escapeinside=||]{python}
@@ -25,22 +25,41 @@ A mark can also be stored in a variable and reused:
 \end{minipage}
 
 \vspace{-1em}
-\linksubsection{mark-class-mod}{Marking classes}
+\linksubsection{mark-class-mod}{Marking Classes}
 Decorators can be applied to classes as well as functions:
 
-\begin{minted}[autogobble, escapeinside=||]{python}
-        @pytest.mark.skipif(|\codeskip*|)
-        class TestLinux:
-            def test_linux_1(self):
-                |\codeskip|
+\begin{minipage}{.57\linewidth}
+    \begin{minted}[autogobble, escapeinside=||]{python}
+    @pytest.mark.skipif(|\codeskip*|)
+    class TestLinux:
+        def test_a(self):
+            |\codeskip|
 
-            def test_linux_2(self):
-                |\codeskip|
-        \end{minted}
-% VS Code workaround
-\if 0
-    )
-    \end{minted}\fi
+        def test_b(self):
+            |\codeskip|
+    \end{minted}
+    % VS Code workaround
+    \if 0
+        )
+        \end{minted}\fi
+\end{minipage}
+\begin{minipage}{.4\linewidth}
+    \begin{tikzpicture}
+        \node [test, minimum width=3.5cm, minimum height=6mm] (test1) {\mono{test_a}};
+        \node [test, below=7mm of test1, minimum width=3.5cm, minimum height=6mm] (test2) {\mono{test_b}};
+
+        \node [marker, above=0 of test1.north west, anchor=south west] (marker1) {\footnotesize{}skipif\vphantom{()}};
+        \node [marker, above=0 of test2.north west, anchor=south west] {\footnotesize{}skipif\vphantom{()}};
+
+        \begin{scope}[on background layer]
+            \node[fit=(test1)(test2)(marker1), fill=orangebg, rounded corners, label=above:\monot{TestLinux\vphantom{.py}}] (rect) {};
+        \end{scope}
+
+        \node [marker, above=0 of rect.north west, anchor=south west, draw=violet!30, fill=violet!2, text=violet!50] (clsmarker) {\footnotesize{}skipif};
+    \end{tikzpicture}
+\end{minipage}
+\vspace{.5em}
+
 To apply a mark to an entire test file,
 a special \mono{pytestmark} global variable can be set to a mark, or a list of marks:
 

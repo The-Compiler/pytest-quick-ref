@@ -1,4 +1,9 @@
 \section{Mocking}
+
+\begin{center}
+\includegraphics[width=.8\linewidth]{img/illustrations/mocking.png}
+\end{center}
+
 \linksubsection{unittest-mock}{unittest.mock}
 
 The \mono{pytest-mock} plugin exposes \mono{unittest.mock} features via a \mono{mocker} fixture.
@@ -32,15 +37,14 @@ We always get another \mono{Mock} back:
     \end{tabular}
 }
 
-\vspace{1em}
-\begin{center}
+\vspace{.5em}
+\begin{minipage}{.57\linewidth}
     \begin{tikzpicture}[
             mock/.style={
                     bluenodebright,
                     align=left,
-                    label={[label distance=.5em]left:\mono{Mock}},
-                    minimum width=5.5cm,
-                    text width=5cm,
+                    label={[xshift=-4.5em]above:\mono{Mock}},
+                    text width=4.25cm,
                 },
         ]
         \node [mock] (dev) {
@@ -74,17 +78,19 @@ We always get another \mono{Mock} back:
         };
         \draw [->] (send) -- (call) node[midway, right] {\monot{\codeskip()}};
     \end{tikzpicture}
-\end{center}
-\vspace{1em}
+\end{minipage}
+\begin{minipage}{.42\linewidth}
+    \vspace{1.75em}
+    Doing the same thing again results in the same mock (same \mono{id}):
+    \vspace{-.25em}
 
-Doing the same thing again results in the same mock (same \mono{id}):
-\vspace{-.25em}
-
-\begin{minted}[autogobble]{python}
-    >>> dev.conn
-    <Mock name='dev.conn' id='X'>
-\end{minted}
-\pagebreak
+    \begin{minted}[autogobble]{python}
+        >>> dev.conn
+        <Mock
+            name='dev.conn'
+            id='X'>
+    \end{minted}
+\end{minipage}
 
 We can set special attributes to \emph{configure} the mock's behavior:
 
@@ -109,7 +115,7 @@ Then we run the tests, which use the mock like a real object. The mock remembers
     Actual:   |\highlightbox{send(\PYG{s}{\PYGZsq{}cmd\PYGZsq{}})}|
 \end{minted}
 
-\subsection{Mocking libraries}
+\subsection{Mocking Libraries}
 
 Sometimes there are ready-made mocking libraries, so there is no need to hand-roll mocks:
 

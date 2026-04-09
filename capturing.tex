@@ -1,4 +1,4 @@
-\section{Built-in fixtures}
+\section{Built-in Fixtures}
 \linksubsection{capturing}{Capturing}
 \begin{description}
     \item[{\mono{capsys}}~] Capturing stdout/stderr in a test by overriding \py{sys.stdout},
@@ -74,5 +74,9 @@ def test_tpl(caplog: pytest.LogCaptureFixture):
         ("root", logging.WARNING, "some msg"),
     ]
 \end{minted}
+
+\vfill
+\includegraphics[width=\linewidth]{img/illustrations/assert-introspection.png}
+\vfill
 
 \pagebreak

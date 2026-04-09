@@ -1,4 +1,4 @@
-\linksection{request}{The request fixture}
+\linksection{request}{The request Fixture}
 Fixture functions can receive a \mono{request} object with attributes:
 
 \begin{minted}[highlightlines=9-10,autogobble,escapeinside=||]{python}
@@ -18,7 +18,7 @@ Fixture functions can receive a \mono{request} object with attributes:
   \end{minted}
 
 \vspace{-.5em}
-\subsection{Getting fixtures dynamically}
+\subsection{Getting Fixtures Dynamically}
 
 With \py[escapeinside=||]{request.getfixturevalue(|\codeskip*|)}, we can get a fixture dynamically, to parametrize a test with fixtures:
 
@@ -60,7 +60,7 @@ Alternatives and (much!) more discussion:
 %    (request.east) -- ([xshift=5mm]request.east) -- ([xshift=5mm]test.east) -- (test.east);
 %\end{tikzpicture}
 
-\subsection{Accessing markers}
+\subsection{Accessing Markers}
 
 Via \py[escapeinside=||]{request.node.get_closest_marker(|\codeskip*|)}, you can get markers from test nodes.
 As with e.g.\ \py[escapeinside=||]{@pytest.mark.parametrize(|\codeskip*|)},
@@ -93,7 +93,7 @@ you'll get: \hspace{6em}\raisebox{-.2em}{\textcolor{gray}{(single-element tuple)
     \py{marker.kwargs} & \textrightarrow{} & \py{{"strict": True}}
 \end{tabular}
 
-\subsection{Custom CLI flags}
+\subsection{Custom CLI Flags}
 Using a plugin hook, you can also customize fixture behavior based on custom CLI flags:
 
 \begin{minted}[autogobble]{python}
