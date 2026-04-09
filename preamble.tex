@@ -5,11 +5,32 @@
 \usepackage{graphicx}
 \usepackage[nolinks]{qrcode}
 \usepackage{xcolor}
+
 \usepackage{fontawesome5}
 \newcommand*{\bluefaicon}[2][]{\hspace{.1em}\textcolor{codeblue#1}{\faIcon{#2}}\hspace{.1em}}
+
 \usepackage{minted}
 \setminted{highlightcolor={highlightcolor}}
+
 \usepackage{enumitem}
+\setlist{
+    % values from leaflet.sty
+    labelsep=.5em,
+    parsep=1ex plus .5ex minus .25ex,
+    itemsep=0pt,
+    topsep=0pt,
+    labelwidth=\the\dimexpr\leftmargini-\labelsep\relax
+}
+
+% values from leaflet.sty
+% \usepackage{titlesec}
+% \titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
+% \titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
+% \titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+% \titlespacing{\section}{0pt}{-3.5ex plus -0.75ex}{1ex}
+% \titlespacing{\subsection}{0pt}{-2.5ex plus -0.5ex}{1pt}
+% \titlespacing{\subsubsection}{0pt}{-2.5ex plus -0.5ex}{-1em}
+
 \usepackage{csquotes}
 \usepackage{colortbl}
 \usepackage{multirow}
