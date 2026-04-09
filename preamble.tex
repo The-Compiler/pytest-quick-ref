@@ -54,14 +54,14 @@
 \newcommand*{\inivalt}[1]{\textcolor{pygstr}{\texttt{#1}}}
 \newcommand*{\inisec}[1]{\textcolor{pygkw}{\texttt{\detokenize{#1}}}}
 
-\newcommand{\linksection}[2]{%
-  \section*{\makebox[\linewidth][s]{#2\hfill
+\newcommand{\sectionlink}[1]{%
+    \hfill
     \normalfont\normalsize
     \textcolor{codeblue}{\texttt{pyte.st/#1}}%
     \quad
     \raisebox{-.2ex}{\textcolor{codeblue}{\qrcode[height=1.5\baselineskip]{https://pyte.st/#1}}}%
-  }}%
 }
+\newcommand{\linksection}[2]{\section*{\makebox[\linewidth][s]{#2\sectionlink{#1}}}}
 
 % https://tex.stackexchange.com/a/729325
 \newlength{\codespacelength}
