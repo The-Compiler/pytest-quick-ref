@@ -8,7 +8,7 @@
           Type for both: \monot{pytest.CaptureFixture[\textcolor{pygkw}{str}]}
     \item[{\parbox[t]{6.5em}{\mono{capsysbinary}/\\\mono{capfdbinary}}}]
           \parbox[t]{6cm}{
-              Like \mono{capsys}/\mono{capfd}, \\ but for binary data. \\
+              Like \mono{capsys}/\mono{capfd}, but for binary data. \\
               Type: \monot{pytest.CaptureFixture[\textcolor{pygkw}{bytes}]}
           }
     \item[\mono{caplog}~] \textsb{Capturing logging output from a test.} \\
@@ -16,7 +16,7 @@
 \end{description}
 \vspace{-.5em}
 
-\mono{capsys} vs. \mono{capfd}: If in doubt, use \mono{capfd} to ensure everything is captured
+\mono{capsys} vs. \mono{capfd}: \\ If in doubt, use \mono{capfd} to ensure everything is captured
 (built-in pytest capturing also uses \mono{fd} by default).
 \vspace{-.5em}
 
@@ -37,7 +37,7 @@ Every process has \emph{two} outputs: \mono{stdout} and \mono[termred]{stderr}:
     |\textcolor{codeblue}{/home:}|
     |\textcolor{codeblue}{username}|
 \end{minted}
-\vspace{-2em}
+\vspace{-1em}
 \begin{minted}[autogobble,escapeinside=||]{text}
     $ ls doesnotexist /home |\highlightbox{> /dev/null}|
     |\textcolor{termred}{ls: cannot access 'doesnotexist': \codeskip}|
@@ -58,6 +58,7 @@ We get them separately with \mono{capfd.readouterr()}:
 \hspace{1em} $\Rightarrow$ \hspace{.5em} \highlightbox{\mono{out}}: \py{"out 1\nout2\n"} \\[-.13em]
 \hspace{1em} \phantom{$\Rightarrow$} \hspace{.5em} \highlightbox[highlightcolorred]{\monot{err\vphantom{t}}}: \py{"err\n"} \\[1em]
 
+\linksubsection{logging}{Capturing Logs}
 \mono{caplog} lets you access logging records. The \mono{.records} attribute provides full records which can be inconvenient (timestamps, etc.),
 convenience attributes are available:
 
@@ -70,8 +71,8 @@ def test_msgs(caplog: pytest.LogCaptureFixture):
 def test_tpl(caplog: pytest.LogCaptureFixture):
     logging.warning("some msg")
     assert caplog.record_tuples == [
-        # logger, loglevel,       message
-        ("root", logging.WARNING, "some msg"),
+      # logger, loglevel,        message
+      ("root",  logging.WARNING, "some msg"),
     ]
 \end{minted}
 

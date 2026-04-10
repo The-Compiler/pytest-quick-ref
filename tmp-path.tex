@@ -14,7 +14,7 @@ A \textbf{fresh empty directory} for every pytest invocation and every test.
    def test_temp(|\highlightbox{tmp\_path: Path}|):
        |\codeskip|
 \end{minted}
-\vspace{1em}%
+\vspace{.25em}%
 \dirtree{%
     .1 /tmp/ \textsf{\footnotesize{\hspace{1em} \textcolor{gray}{(system-wide temp directory)}}}.
     .2 pytest-of-freya/.
@@ -27,6 +27,7 @@ A \textbf{fresh empty directory} for every pytest invocation and every test.
     .3 \codeskip*.
 }
 
+\vspace{1.5em}
 \mono{tmp_path}:
 
 Based on Python's \mono{pathlib.Path}, a more object-oriented and convenient \mono{os.path} alternative:

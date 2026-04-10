@@ -1,9 +1,10 @@
 \section{Debugging Failing Tests}
 
-\linksubsection{output}{Args to Control Output}
+% \linksubsection{output}{Arguments to Control Output}
+\subsection[Arguments to Control Output]{\makebox[\linewidth][s]{Args to Control Output\sectionlink{output}}}
 
 \begin{tabular}{rrl}
-              & \mono{--tb}                                                                                            & Control traceback generation  \\
+              & \mono{--tb=}                                                                                            & Control traceback generation  \\
               & \multicolumn{2}{l}{\mono{auto} / \mono{long} / \mono{short} / \mono{line} / \mono{native} / \mono{no}}                                 \\
     \mono{-l} & \mono{--showlocals}                                                                                    & Show locals in tracebacks     \\
     \mono{-s} & \mono{--capture=no}                                                                                    & Disable output capturing      \\
@@ -50,7 +51,7 @@
 \newcommand{\runsep}{{\Large,}\hspace{.6em}}
 
 \raisebox{.75ex}{after} \hspace{.25em} \drawex{1/good, 2/bad, 3/good, 4/bad, 5/good} \\[.5em]
-\raisebox{.7ex}{pass:} \drawex{\phantom{1}/good} \hspace{1em} \raisebox{.7ex}{fail:} \drawex{\phantom{1}/bad} \hspace{1em} \raisebox{.7ex}{new:} \drawex{\phantom{1}/new} \\[.5em]
+\raisebox{.7ex}{pass:} \hspace{.15em} \drawex{\phantom{1}/good} \hspace{1em} \raisebox{.7ex}{fail:} \drawex{\phantom{1}/bad} \hspace{1em} \raisebox{.7ex}{new:} \drawex{\phantom{1}/new} \\[.5em]
 \vspace{-1em}
 
 \begin{tabular}{rrl}
@@ -211,10 +212,10 @@ The \mono{pytest-rerunfailures} plugin reruns flaky tests:
                     test_flaky.py::test_maybe_fail |\textcolor{termyellow}{\highlightbox{RERUN}}|
                     test_flaky.py::test_maybe_fail |\textcolor{termgreen}{\highlightbox[white]{PASSED}}|
 
-                    |\textcolor{termyellow}{======== \textcolor{termgreen}{\textbf{1 passed}}, \highlightbox{\textcolor{termyellow}{\textbf{1 rerun}}}\textcolor{termyellow}{ in \codeskip*}\textcolor{termyellow}{} ========}|
+                    |\textcolor{termyellow}{======== \textcolor{termgreen}{\textbf{1 passed}}, \highlightbox{\textcolor{termyellow}{\textbf{1 rerun}}}\textcolor{termyellow}{\ in \codeskip*}\textcolor{termyellow}{} ========}|
                 \end{minted}
 
-This \textbf{should be a last resort}, but probably is still better than skipping the test or using (non-strict) xfail.
+This \textbf{should be a last resort}, but probably is still better than skipping the test or using (non-strict) xfail. \\
 If you can, fix the flakiness instead!
 
 There are services to track test results over time to spot flaky tests, e.g.:

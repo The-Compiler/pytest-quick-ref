@@ -25,6 +25,7 @@ def test_a(monkeypatch: pytest.MonkeyPatch):
         "platform",  # attribute name (str!)
         "MonkeyOS",  # new value
     )
+    #                  name    value
     monkeypatch.setenv("PATH", "/zoo")
     print_info()
     assert False

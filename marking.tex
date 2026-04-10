@@ -1,6 +1,7 @@
 
 \section{Reusing Marks}
 A mark can also be stored in a variable and reused:
+\vspace{-.25em}
 
 \begin{minted}[autogobble,escapeinside=||]{python}
   skip_windows = pytest.mark.skipif(
@@ -58,8 +59,9 @@ Decorators can be applied to classes as well as functions:
         \node [marker, above=0 of rect.north west, anchor=south west, draw=violet!30, fill=violet!2, text=violet!50] (clsmarker) {\footnotesize{}skipif};
     \end{tikzpicture}
 \end{minipage}
-\vspace{.5em}
 
+\vspace{-1.25em}
+\section{Marking Modules}
 To apply a mark to an entire test file,
 a special \mono{pytestmark} global variable can be set to a mark, or a list of marks:
 
@@ -82,15 +84,17 @@ a special \mono{pytestmark} global variable can be set to a mark, or a list of m
           |\codeskip|
     \end{minted}
 \end{minipage}
-\vspace{.25em}
+\vspace{.1em}
 
 Skip all tests in a file unconditionally:
+\vspace{-.5em}
 
 \begin{minted}[autogobble]{python}
     pytestmark = pytest.mark.skip("WIP")
 \end{minted}
 
 Skip on a missing import:
+\vspace{-.5em}
 
 \begin{minted}[autogobble]{python}
     pexpect = pytest.importorskip("pexpect")

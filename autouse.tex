@@ -17,6 +17,22 @@ This runs the fixture for all tests for which it is visible (e.g. in the same mo
         assert not list(home.iterdir())
 \end{minted}
 
+\linksubsection{usefixtures}{usefixtures Marker}
+Using fixtures without specifying them as function args:
+
+\begin{minted}[autogobble, highlightlines=6]{python}
+    @pytest.fixture
+    def tmp_homedir(tmp_path, monkeypatch):
+        monkeypatch.setenv("HOME", str(tmp_path))
+        return tmp_path
+
+    @pytest.mark.usefixtures("tmp_homedir")
+    class TestHomeDir:
+        def test_empty(self):
+            home = pathlib.Path.home()
+            assert not list(home.iterdir())
+\end{minted}
+
 \begin{minipage}[t]{.49\linewidth}
     \textbf{autouse:} \vspace{.5em}
 
@@ -57,19 +73,3 @@ This runs the fixture for all tests for which it is visible (e.g. in the same mo
         \node [marker, above=0 of rect.north west, anchor=south west] (marker) {usefixtures: \mono{tmp_homedir}};
     \end{tikzpicture}
 \end{minipage}
-
-\linksubsection{usefixtures}{usefixtures Marker}
-Using fixtures without specifying them as function args:
-
-\begin{minted}[autogobble, highlightlines=6]{python}
-    @pytest.fixture
-    def tmp_homedir(tmp_path, monkeypatch):
-        monkeypatch.setenv("HOME", str(tmp_path))
-        return tmp_path
-
-    @pytest.mark.usefixtures("tmp_homedir")
-    class TestHomeDir:
-        def test_empty(self):
-            home = pathlib.Path.home()
-            assert not list(home.iterdir())
-\end{minted}

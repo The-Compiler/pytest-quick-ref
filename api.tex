@@ -64,6 +64,6 @@ Floating point comparisons need a tolerance:
 
 Can override rel./abs.\ tolerance, e.g.\ 20 \textpm{} 2\textdegree: \\
 \py[escapeinside=||]{assert temperature == pytest.approx(20, abs=2)}
-default: 1e-6 relative / 1e-12 absolute
+default: $10^{-6}$ relative / $10^{-12}$ absolute.
 
-Supports various data types: Sequences of numbers \\ (e.g.\ lists or tuples), dictionary values, \mono{numpy} arrays
+Supports various data types: Sequences of numbers \\ (e.g.\ lists or tuples), dictionary values, \mono{numpy} arrays.

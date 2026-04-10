@@ -70,7 +70,7 @@ arguments to markers, and access them in your fixture:
 \begin{minted}[escapeinside=||,autogobble]{python}
 @pytest.fixture
 def config(request: pytest.FixtureRequest):
-    marker = request.node.get_closest_markerr
+    marker = request.node.get_closest_marker(
         "config_args")
     if marker is None:
         return Config()
@@ -96,6 +96,9 @@ you'll get: \hspace{6em}\raisebox{-.2em}{\textcolor{gray}{(single-element tuple)
 \subsection{Custom CLI Flags}
 Using a plugin hook, you can also customize fixture behavior based on custom CLI flags:
 
+\filenameheader{conftest.py}
+\vspace{-.5em}
+
 \begin{minted}[autogobble]{python}
     def pytest_addoption(parser: pytest.Parser):
         parser.addoption("--server-ip", type=str)
@@ -115,6 +118,8 @@ Using a plugin hook, you can also customize fixture behavior based on custom CLI
 
 \vspace{.5em}
 \filenameheadert{\$ pytest --help}
+\vspace{-.5em}
+
 \begin{minted}[escapeinside=||,autogobble]{text}
     |\codeskip|
     Custom options:

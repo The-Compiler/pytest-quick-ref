@@ -1,4 +1,7 @@
-\linksection{writing-plugins}{Writing Plugins}
+\section{Writing Plugins}
+\sectionlink{writing-plugins}
+\vspace{1em}
+
 Plugins come in two flavours:
 
 \begin{itemize}
@@ -114,7 +117,7 @@ As with fixtures, imagine pytest calling your function with keyword arguments:
     .3 \mono{pytest_collect_file}.
     .4 \mono{pytest_pycollect_makemodule}.
     .3 \mono{pytest_ignore_collect}.
-    .3 \highlightbox{\mono{pytest_collect_file}}.
+    .3 \mono{pytest_collect_file}.
     .4 \mono{pytest_pycollect_makemodule}.
     .3 \textnormal{(repeat)}.
     .2 \mono{pytest_itemcollected}.
@@ -168,7 +171,7 @@ As with fixtures, imagine pytest calling your function with keyword arguments:
     .2 \mono{pytest_make_collect_report}.
     .3 \mono{pytest_pycollect_makeitem}.
     .3 \mono{pytest_pycollect_makeitem}.
-    .4 \highlightbox{\mono{pytest_generate_tests}}.
+    .4 \mono{pytest_generate_tests}.
     .5 \mono{pytest_make_parametrize_id}.
     .3 \textnormal{(repeat)}.
     .2 \mono{pytest_itemcollected}.

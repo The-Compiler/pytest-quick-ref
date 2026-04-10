@@ -9,7 +9,6 @@
 \vspace{-.5em}
 $\Rightarrow$ Test function is not run, result is \enquote{skipped} (\textcolor{termyellow}{\texttt{s}})
 
-Use \py{@pytest.mark.skip} (instead of \mono{skipif}) \\ for unconditional skipping.
 \vspace{-.5em}
 
 \begin{minted}[autogobble,escapeinside=||]{python}
@@ -23,6 +22,8 @@ Use \py{@pytest.mark.skip} (instead of \mono{skipif}) \\ for unconditional skipp
         |\codeskip|
 \end{minted}
 \vspace{-.5em}
+
+Use \py{@pytest.mark.skip} (instead of \mono{skipif}) \\ for unconditional skipping.
 
 Skip from inside a test or fixture function by calling \py{pytest.skip(reason)}.
 \vspace{1em}
@@ -45,4 +46,4 @@ $\Rightarrow$ Test function is run, but result is \enquote{xfailed} (\textcolor{
         |\codeskip|
 \end{minted}
 
-Use \mono{pytest.raises} to test a \enquote{bad case} but \textsb{intended behavior}. Use \mono{pytest.mark.xfail} to mark a test where the implementation behaves in \textsb{unintended} ways: The test \textsb{should work}, but currently does not (e.g.\ upstream bug).
+Use \mono{pytest.raises} to test a \enquote{bad case} but \textsb{intended behavior}. Use \mono{pytest.mark.xfail} to mark a test where the implementation behaves in \textsb{unintended} ways: \\ The test \textsb{should work}, but currently does not (e.g.\ due to an upstream bug).
