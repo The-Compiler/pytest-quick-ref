@@ -29,15 +29,15 @@ Can be useful for bool flags (e.g. \py{strict=True/False} where all cases should
 
 Instead of tuples, \py{pytest.param} objects can be passed to \mono{parametrize}, which additionally take \mono{marks} and \mono{id}:
 
-\begin{minted}[highlightlines=2-6]{python}
+\begin{minted}[highlightlines=2-6,escapeinside=||]{python}
 @pytest.mark.parametrize("a, b, op, res", [
     pytest.param(
         2, 3, "**", 8,
         marks=pytest.mark.xfail(reason="..."),
-        id="pow",
+        |id|="pow",
     ),
-    pytest.param(1, 2, "+", 3, id="add"),
-    pytest.param(3, 1, "-", 2, id="sub"),
+    pytest.param(1, 2, "+", 3, |id|="add"),
+    pytest.param(3, 1, "-", 2, |id|="sub"),
 ])
 def test_calc(a, b, op, res):
     assert calc(a, b, op) == res
