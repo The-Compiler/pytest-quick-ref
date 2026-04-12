@@ -386,10 +386,20 @@ You can package pytest like any other Python package, and add entry points to ma
     [|\codeskip*|]
     |\codeskip|
 \end{minted}
+
+\dirtree{%
+    .1 pytest-yamlcalc/.
+    .2 \codeskip*.
+    .2 src/pytest\_yamlcalc.
+    .3 \highlightbox[white]{\_\_init\_\_.py}.
+    .3 \highlightbox{plugin.py}.
+    .2 pyproject.toml.
+}
+
 \vspace{2em}
 
 \begin{center}
-\includegraphics[width=.7\linewidth]{img/cookiecutter.pdf}
+    \includegraphics[width=.7\linewidth]{img/cookiecutter.pdf}
 \end{center}
 
 The \mono{cookiecutter} project can generate the boilerplate:
