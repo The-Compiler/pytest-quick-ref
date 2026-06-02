@@ -3,7 +3,7 @@
 \begin{description}
     \item[{\mono{capsys}}~] Capturing stdout/stderr in a test by overriding \py{sys.stdout},
           e.g.\ for \py[escapeinside=||]{print(|\codeskip*|)}.
-    \item[\mono{capfd}~] \textsb{Capturing stdout/stderr in a test at file descriptor level,}
+    \item[\mono{capfd}~] \textsb{Capturing stdout/stderr at file descriptor level,}
           e.g.\ for subprocesses or libraries printing from C code. \\[.5em]
           Type for both: \monot{pytest.CaptureFixture[\textcolor{pygkw}{str}]}
     \item[{\parbox[t]{6.5em}{\mono{capsysbinary}/\\\mono{capfdbinary}}}]

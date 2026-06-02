@@ -146,7 +146,7 @@ Running e.g.\ \mono{pytest --durations=20} shows slow tests:
 
 \subsection{Dealing with Hanging Tests}
 \sectionlink{faulthandler}
-\vspace{.5em}
+\vspace{1em}
 
 \begin{minipage}{.45\linewidth}
     \begin{minted}[autogobble]{python}
@@ -160,7 +160,7 @@ Running e.g.\ \mono{pytest --durations=20} shows slow tests:
         hang()
 \end{minted}
 \end{minipage}
-\vspace{.5em}
+\vspace{1em}
 
 pytest can print the traceback after a given timeout via the \inikey{faulthandler_timeout} config option:
 \pagebreak
@@ -195,7 +195,7 @@ pytest 9 adds a \inikey{faulthandler_exit_on_timeout} option to quit pytest on t
     |\codeskip|
 \end{minted}
 
-\vspace{-2em}
+\vspace{-1em}
 
 \linksubsection{flaky}{Dealing with Flaky Tests}
 The \mono{pytest-rerunfailures} plugin reruns flaky tests:

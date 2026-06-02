@@ -35,7 +35,7 @@ Fixture functions can declare a caching scope:
         \draw [->] (test12) -- (rpnval12);
 
 
-        \node [fixture, minimum width=2.75cm, right=0.4cm of rpn] (rpn2) {\mono{rpn}};
+        \node [fixture, minimum width=2.75cm, right=1.5cm of rpn] (rpn2) {\mono{rpn}};
         \node [above=0.1cm of rpn2, text width=2.75cm] {Module scope:};
         \node [fixtureval, below=5mm of rpn2] (rpnval2) {\scriptsize \mono{rpn()}};
         \node [test, below=5mm of rpnval2, xshift=-2em] (test21) {\mono{test_a}};
@@ -66,7 +66,7 @@ Fixture functions can declare a caching scope:
         \item [--] Less isolation between tests, \mono{test_b} fails:
     \end{description}
 \end{minipage}
-\hspace{2mm}
+\hspace{6mm}
 \begin{minipage}[t]{.45\linewidth}
     \begin{minted}[escapeinside=||,autogobble,highlightlines=3,highlightcolor=highlightcolorred]{python}
         def test_b(rpn: |\codeskip|):
