@@ -13,7 +13,7 @@ The \mono{monkeypatch} fixture allows to temporarily change state for the
     \item Adjust \mono{sys.path} for importing (\mono{syspath_prepend})
 \end{itemize}
 
-\begin{minted}[autogobble,escapeinside=||,highlightlines=7-12]{python}
+\begin{minted}[autogobble,escapeinside=||,highlightlines=7-11]{python}
 def print_info():
     path = os.environ.get("PATH", "")
     print(f"platform: {sys.platform}")
