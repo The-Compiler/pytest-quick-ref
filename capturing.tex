@@ -33,14 +33,14 @@ Every process has \emph{two} outputs: \mono{stdout} and \mono[termred]{stderr}:
 
 \begin{minted}[autogobble,escapeinside=||]{text}
     $ ls doesnotexist /home
-    |\textcolor{termred}{ls: cannot access 'doesnotexist': \codeskip}|
+    |\textcolor{termred}{ls: cannot access \PYGZsq{}doesnotexist\PYGZsq{}: \codeskip}|
     |\textcolor{codeblue}{/home:}|
     |\textcolor{codeblue}{username}|
 \end{minted}
 \vspace{-1em}
 \begin{minted}[autogobble,escapeinside=||]{text}
     $ ls doesnotexist /home |\highlightbox{> /dev/null}|
-    |\textcolor{termred}{ls: cannot access 'doesnotexist': \codeskip}|
+    |\textcolor{termred}{ls: cannot access \PYGZsq{}doesnotexist\PYGZsq{}: \codeskip}|
 \end{minted}
 \vspace{-.5em}
 

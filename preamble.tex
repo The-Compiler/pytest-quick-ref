@@ -118,6 +118,12 @@ inherits/.style={-{Triangle[open]}},
 >=latex,
 }
 
+\newcommand*{\pytestix}[1][9+]{%
+    \tikz[baseline={([yshift=-.5ex]current bounding box.center)}]{%
+        \node[thin, marker, font=\scriptsize] {pytest #1};%
+    }%
+}
+
 \usepackage{fancyhdr}
 \fancypagestyle{plain}{%
     \fancyhf{} % clear all header and footer fields

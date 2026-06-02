@@ -2,20 +2,20 @@
 \linksubsection{filterwarnings}{filterwarnings}
 Turning warning into errors, but ignoring known warnings (e.g.\ from dependencies):
 
-\begin{minted}[autogobble]{ini}
+\begin{minted}[autogobble]{toml}
       [pytest]
-      filterwarnings =
-          error
+      filterwarnings = [
+          "error"
     \end{minted}
 \vspace{-1em}
 \hspace{3em}$\downarrow{}$ action \hspace{3.1em} $\downarrow{}$ message regex
 \vspace{-1em}
-\begin{minted}[gobble=6]{ini}
-          ignore:ham\(\) is deprecated: \
-                DeprecationWarning:somelib
+\begin{minted}[gobble=6]{toml}
+          "ignore:ham\(\) is deprecated:
+                DeprecationWarning:somelib"
     \end{minted}
 \vspace{-.8em}
-\hspace{5em} $\uparrow{}$ warning category \hspace{1em} $\uparrow{}$ module
+\mono[black]{]}\hspace{4.25em} $\uparrow{}$ warning category \hspace{1em} $\uparrow{}$ module
 \vspace{-1em}
 
 \section{API}

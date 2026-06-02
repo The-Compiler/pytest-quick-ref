@@ -2,7 +2,7 @@
 Fixture functions can receive a \mono{request} object with \\
 attributes:
 
-\begin{minted}[highlightlines=9-10,autogobble,escapeinside=||]{python}
+\begin{minted}[highlightlines=8-9,autogobble,escapeinside=||]{python}
     @pytest.fixture
     def myfix(request: pytest.FixtureRequest):
         request.function  # test function/method
@@ -10,9 +10,9 @@ attributes:
         request.instance  # class instance
         request.module    # module of test
 
-        request.path      # path object of module
         request.node      # collection node
         request.config    # pytest config object
+        request.path      # path object of module
 
     def test_myfix(myfix):
         |\codeskip|

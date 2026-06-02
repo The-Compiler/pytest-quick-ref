@@ -2,7 +2,7 @@
 \begin{itemize}[itemsep=0pt]
     \item \mono{tests/} outside of \mono{src/}, file layout 1:1 mirroring (roughly) of \mono{src/mypackage/}
     \item \mono{conftest.py}: fixtures, plugin hooks, etc.
-    \item \mono{pytest.ini}/\mono{pyproject.toml}/\ldots{}: config
+    \item \mono{pytest.toml}/\mono{pyproject.toml}/\ldots{}: config
     \item \mono{__init__.py} files in \mono{src/myproject} and \mono{tests/}
 \end{itemize}
 
@@ -44,10 +44,10 @@
 
 \linksection{config}{Configuration}
 \begin{itemize}[itemsep=0pt]
+    \item \pytestix{} \inisec{[pytest]} in (\mono{.})\mono{pytest.toml}
+    \item \pytestix{} \inisec{[tool.pytest]} in \mono{pyproject.toml}
     \item \inisec{[pytest]} in (\mono{.})\mono{pytest.ini}
-    \item pytest 9+: \inisec{[pytest]} in (\mono{.})\mono{pytest.toml}
     \item \inisec{[tool.pytest.ini_options]} in \mono{pyproject.toml}
-    \item pytest 9+: \inisec{[tool.pytest]} in \mono{pyproject.toml}
     \item \inisec{[pytest]} in \mono{tox.ini}
     \item \inisec{[tool.pytest]} in \mono{setup.cfg} (deprecated)
 \end{itemize}
@@ -65,7 +65,7 @@
 
 \vspace{-1.5em}
 \linksubsection{strict}{Strict Mode}
-pytest 9: \ini{strict = true} enables: \vspace{-.5em}
+\pytestix{}\hspace{1em} \ini{strict = true} enables: \vspace{-.5em}
 
 \begin{itemize}[itemsep=0pt]
     \item \inikey{strict_config} (error on unknown options)
@@ -74,5 +74,5 @@ pytest 9: \ini{strict = true} enables: \vspace{-.5em}
     \item \inikey{strict_xfail} (error on unexpected passes)
 \end{itemize}
 
-Older pytest versions: Set \ini{xfail_strict = true} and \ini{addopts = --strict-config --strict-markers}
+\pytestix[<9]\hspace{1em} Set \ini{xfail_strict = true} and \\[.25em] \ini{addopts = --strict-config --strict-markers}
 
