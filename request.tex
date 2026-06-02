@@ -41,12 +41,13 @@ With \py[escapeinside=||]{request.getfixturevalue(|\codeskip*|)}, we can get a f
         config = |\highlightbox{request.getfixturevalue}|(confname)
         |\codeskip|
 \end{minted}
+\vspace{-.25em}
 
 Alternatives and (much!) more discussion:
 
 \begin{itemize}
-    \item pytest issue 349: \\ Using fixtures in \mono{pytest.mark.parametrize}
-    \item The \mono{pytest-cases} plugin for more sophisticated parametrization
+    \item[] \hspace{-1.25em}\qrcode[height=2em]{https://github.com/pytest-dev/pytest/issues/349}\hspace{1em}\begin{minipage}{.9\linewidth}pytest issue 349: \\ Using fixtures in \mono{pytest.mark.parametrize}\end{minipage} \\[.25em]
+    \item[] \hspace{-1.25em}\qrcode[height=2em]{https://smarie.github.io/python-pytest-cases/}\hspace{1em}\begin{minipage}{.9\linewidth}The \mono{pytest-cases} plugin for more sophisticated parametrization\end{minipage}
 \end{itemize}
 %\qrcode[height=4em]{https://github.com/pytest-dev/pytest/issues/349}
 
@@ -61,7 +62,7 @@ Alternatives and (much!) more discussion:
 %    (request.east) -- ([xshift=5mm]request.east) -- ([xshift=5mm]test.east) -- (test.east);
 %\end{tikzpicture}
 
-\subsection{Accessing Markers}
+\linksubsection{fixt-markers}{Accessing Markers}
 
 Via \py[escapeinside=||]{request.node.get_closest_marker(|\codeskip*|)}, you can get markers from test nodes.
 As with e.g.\ \py[escapeinside=||]{@pytest.mark.parametrize(|\codeskip*|)},
@@ -94,7 +95,7 @@ you'll get: \hspace{6em}\raisebox{-.2em}{\textcolor{gray}{(single-element tuple)
     \py{marker.kwargs} & \textrightarrow{} & \py{{"strict": True}}
 \end{tabular}
 
-\subsection{Custom CLI Flags}
+\linksubsection{fixt-addoption}{Custom CLI Flags}
 Using a plugin hook, you can also customize fixture \\
 behavior based on custom CLI flags:
 
