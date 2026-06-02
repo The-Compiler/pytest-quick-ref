@@ -183,7 +183,8 @@ As with fixtures, imagine pytest calling your function with keyword arguments:
 }
 \vspace{1em}
 
-pytest builds up a collection tree of \mono{Collector} (has children) and \mono{Item} (leaf node; runnable
+pytest builds up a collection tree of \mono{Collector} (has \\
+children) and \mono{Item} (leaf node; runnable
 test) instances. \\ Both are \mono{Node} subclasses.
 %\item Collectors' \mono{collect()} returns list of child \mono{Collector} and
 %      \mono{Item} instances.
