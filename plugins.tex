@@ -319,6 +319,7 @@ We can use the hook to e.g.\ add a marker to all tests using another marker:
     .2 \mono{pytest_runtest_protocol}.
     .3 \mono{pytest_runtest_logstart}.
     .3 \textcolor{cyan}{\texttt{pytest\_runtest\_setup}}.
+    .4 \textcolor{cyan}{\texttt{pytest\_fixture\_setup}}.
     .3 \textcolor{cyan}{\texttt{pytest\_runtest\_makereport}}.
     .3 \textcolor{cyan}{\texttt{pytest\_runtest\_logreport}}.
     .4 \textcolor{cyan}{\texttt{pytest\_runtest\_teststatus}}.
@@ -326,6 +327,7 @@ We can use the hook to e.g.\ add a marker to all tests using another marker:
     .4 \textcolor{bruhinblue!60}{\texttt{pytest\_pyfunc\_call}}.
     .3 \textcolor{bruhinblue!60}{\codeskip* (\texttt{makereport}, \texttt{logreport})}.
     .3 \textcolor{cyan}{\texttt{pytest\_runtest\_teardown}}.
+    .4 \textcolor{cyan}{\texttt{pytest\_fixture\_post\_finalizer}}.
     .3 \textcolor{cyan}{\codeskip* (\texttt{makereport}, \texttt{logreport})}.
     .3 \mono{pytest_runtest_logfinish}.
     .2 \textnormal{(repeat)}.
