@@ -120,10 +120,10 @@ Then we run the tests, which use the mock like a real object. The mock remembers
 Sometimes there are ready-made mocking libraries, so there is no need to hand-roll mocks:
 
 \begin{description}[labelwidth=9em, leftmargin=!, itemsep=0pt]
-    \item[requests] \textbf{responses}, betamax
+    \item[requests] responses, betamax
     \item[aiohttp] aioresponses
     \item[httpx] respx, pytest-httpx
-    \item[HTTP in general] \textbf{VCR.py}, pook
+    \item[HTTP in general] VCR.py, pook
     \item[sockets in general] mocket
     \item[Services] moto (AWS/boto3), \\ fakesnow (Snowflake), \\ fakeredis (Redis/Valkey)
     \item[time/datetime] freezegun, time-machine
@@ -132,4 +132,4 @@ Sometimes there are ready-made mocking libraries, so there is no need to hand-ro
 
 For most of those, there's a corresponding pytest plugin for nice integration.
 
-\textbf{Result:} More high-level abstraction for mocking, with well-tested mocks.
+\textbf{Result:} More high-level abstraction for mocking, \\ with well-tested mocks.
